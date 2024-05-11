@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\Pankaj\\OneDrive\\Documents\\Workspace\\UE5MultiplayerShooter\\FPSMultiplayer\\Source\\FPSMultiplayer\\FPSMultiplayer.Build.cs",
+		"C:\\Users\\Pankaj\\OneDrive\\Documents\\Workspace\\UE5MultiplayerShooter\\FPSMultiplayer\\Source\\FPSMultiplayer.Target.cs",
+		"C:\\Users\\Pankaj\\OneDrive\\Documents\\Workspace\\UE5MultiplayerShooter\\FPSMultiplayer\\Source\\FPSMultiplayerEditor.Target.cs"
+	],
+	"EngineVersion": "5.4.1"
+}

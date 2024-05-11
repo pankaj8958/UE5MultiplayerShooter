@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-FPSMultiplayer.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\Pankaj\OneDrive\Documents\Workspace\UE5MultiplayerShooter\FPSMultiplayer\Intermediate\Build\Win64\x64\FPSMultiplayerEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
+"C:\Users\Pankaj\OneDrive\Documents\Workspace\UE5MultiplayerShooter\FPSMultiplayer\Intermediate\Build\Win64\x64\UnrealEditor\Development\FPSMultiplayer\FPSMultiplayer.cpp.obj"
+"C:\Users\Pankaj\OneDrive\Documents\Workspace\UE5MultiplayerShooter\FPSMultiplayer\Intermediate\Build\Win64\x64\UnrealEditor\Development\FPSMultiplayer\Default.rc2.res"
+/OUT:"C:\Users\Pankaj\OneDrive\Documents\Workspace\UE5MultiplayerShooter\FPSMultiplayer\Intermediate\Build\Win64\x64\UnrealEditor\Development\FPSMultiplayer\UnrealEditor-FPSMultiplayer.lib"

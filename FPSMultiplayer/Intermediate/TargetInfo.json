@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "FPSMultiplayer",
+			"Path": "..\\Source\\FPSMultiplayer.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "FPSMultiplayerEditor",
+			"Path": "..\\Source\\FPSMultiplayerEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
