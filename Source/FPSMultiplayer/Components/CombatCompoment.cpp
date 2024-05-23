@@ -2,15 +2,15 @@
 
 
 #include "CombatCompoment.h"
-
 #include "FPSMultiplayer/Character/BlasterCharacter.h"
 #include "FPSMultiplayer/Weapon/Weapon.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Net/UnrealNetwork.h"
 // Sets default values for this component's properties
 UCombatCompoment::UCombatCompoment()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	
 }
 // Called when the game starts
 void UCombatCompoment::BeginPlay()
@@ -27,6 +27,12 @@ void UCombatCompoment::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	// ...
 }
+void UCombatCompoment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCombatCompoment, EquippedWeapon);
+}
+
 void UCombatCompoment::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if(Character == nullptr || WeaponToEquip == nullptr)
@@ -39,7 +45,6 @@ void UCombatCompoment::EquipWeapon(AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->ShowPickupWidget(false);
 }
 
 

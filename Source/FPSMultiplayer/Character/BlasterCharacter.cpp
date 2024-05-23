@@ -98,7 +98,21 @@ void ABlasterCharacter::LookUp(float Value)
 
 void ABlasterCharacter::EquippeButtonP̦ressed()
 {
-	if(Combat && HasAuthority())
+	if(Combat)
+	{
+		if(HasAuthority())
+		{
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+		else
+		{
+			ServerEquipButtonPressed();	
+		}
+	}
+}
+void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
+{
+	if(Combat)
 	{
 		Combat->EquipWeapon(OverlappingWeapon);
 	}
@@ -129,4 +143,8 @@ void ABlasterCharacter::SetOverlappingWeapon(AWeapon *Weapon)
 			OverlappingWeapon->ShowPickupWidget(true);
 		}
 	}
+}
+bool ABlasterCharacter::IsWeaponEquipped()
+{
+	return (Combat && Combat->EquippedWeapon);
 }
