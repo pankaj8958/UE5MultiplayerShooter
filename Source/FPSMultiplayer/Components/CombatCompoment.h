@@ -23,9 +23,14 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	void SetAiming(bool bIsAiming);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetAiming(bool IsAiming);
 private:
 	class ABlasterCharacter* Character;
 	UPROPERTY(Replicated)
 	class AWeapon* EquippedWeapon;
-	
+	UPROPERTY(Replicated)
+	bool bAiming;
 };
