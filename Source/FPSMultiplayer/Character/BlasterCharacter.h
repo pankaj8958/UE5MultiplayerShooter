@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "FPSMultiplayer/BlasterType/TurningInPlace.h"
 #include "BlasterCharacter.generated.h"
 
 UCLASS()
@@ -31,6 +32,7 @@ protected:
 	void AimButtonPresses();
 	void AimButtonReleased();
 	void AimOffset(float DeltaTime);
+	virtual void Jump() override;
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -51,12 +53,17 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
 	float AO_Yaw;
+	float InterpAO_Yaw;
 	float AO_Pitch;
 	FRotator StartingAimRotation;
+	ETurningInPlace TurningInPlace;
+	void TurnInPlace(float DeltaTime);
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	FORCEINLINE float GetAOYaw() const {return  AO_Yaw;}
 	FORCEINLINE float GetAOPitch() const {return  AO_Pitch;}
+	AWeapon* GetEquippedWeapon();
+	FORCEINLINE ETurningInPlace GetTurningInPlace(){return  TurningInPlace;}
 };
