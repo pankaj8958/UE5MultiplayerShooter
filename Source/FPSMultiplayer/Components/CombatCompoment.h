@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "CombatCompoment.generated.h"
-
+#define  TRACE_LENGTH = 80000.f
 class AWeapon;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FPSMULTIPLAYER_API UCombatCompoment : public UActorComponent
@@ -30,6 +30,14 @@ protected:
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
+	void FireButtonPressed(bool bPressed);
+	
+	UFUNCTION(Server, Reliable)
+	void ServerFire();
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiCastFire();
+
+	void TraceUnderCrossHairs(FHitResult& TraceHitResult);
 private:
 	class ABlasterCharacter* Character;
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
@@ -41,4 +49,6 @@ private:
 	float BaseWalkSpeed;
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed;
+
+	bool bFireButtonPressed;
 };
