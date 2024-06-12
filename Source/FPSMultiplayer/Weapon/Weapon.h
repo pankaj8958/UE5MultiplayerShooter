@@ -28,6 +28,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void Fire(const FVector& HitTarget);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,8 +65,9 @@ private:
 	class UWidgetComponent* PickupWidget;
 	UPROPERTY(EditAnywhere, Category="Weapon property")
 	class UAnimationAsset* FireAnimation;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ACasing> CasingClass;
 public:
-	void Fire();
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere() const {return AreaSphere;}
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const {return WeaponMesh;}

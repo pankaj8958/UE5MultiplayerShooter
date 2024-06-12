@@ -8,6 +8,8 @@
 #include "Components/WidgetComponent.h"
 #include "FPSMultiplayer/Character/BlasterCharacter.h"
 #include "Net/UnrealNetwork.h"
+#include  "Casing.h"
+#include "Engine/SkeletalMeshSocket.h"
 // Sets default values
 AWeapon::AWeapon()
 {
@@ -100,11 +102,28 @@ void AWeapon::OnRep_WeaponState()
 		break;
 	}
 }
-void AWeapon::Fire()
+void AWeapon::Fire(const FVector& HitTarget)
 {
 	if(FireAnimation)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
+	}
+	if(CasingClass)
+	{
+		const USkeletalMeshSocket* CasingSocket = WeaponMesh->GetSocketByName(FName("AmmoEject"));
+		if(CasingSocket)
+		{
+			FTransform SocketTransform = CasingSocket->GetSocketTransform(GetWeaponMesh());
+			UWorld* World = GetWorld();
+			if(World)
+			{
+				World->SpawnActor<ACasing>(
+					CasingClass,
+					SocketTransform.GetLocation(),
+					SocketTransform.GetRotation().Rotator()
+				);
+			}
+		}
 	}
 }
 

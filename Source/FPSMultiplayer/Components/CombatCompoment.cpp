@@ -28,8 +28,6 @@ void UCombatCompoment::BeginPlay()
 void UCombatCompoment::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	FHitResult HitResult;
-	TraceUnderCrossHairs(HitResult);
 }
 void UCombatCompoment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -82,21 +80,23 @@ void UCombatCompoment::FireButtonPressed(bool bPressed)
 	bFireButtonPressed = bPressed;
 	if(bFireButtonPressed)
 	{
-		ServerFire();
+		FHitResult HitResult;
+		TraceUnderCrossHairs(HitResult);
+		ServerFire(HitResult.ImpactPoint);
 	}
 }
-void UCombatCompoment::ServerFire_Implementation()
+void UCombatCompoment::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	MultiCastFire();
+	MultiCastFire(TraceHitTarget);
 }
-void UCombatCompoment::MultiCastFire_Implementation()
+void UCombatCompoment::MultiCastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	if(EquippedWeapon == nullptr)
 		return;
 	if(Character)
 	{
 		Character->PlayFireMontage(bAiming);
-		EquippedWeapon->Fire();
+		EquippedWeapon->Fire(TraceHitTarget);
 	}
 }
 void UCombatCompoment::TraceUnderCrossHairs(FHitResult& TraceHitResult)

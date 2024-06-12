@@ -4,35 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Projectile.generated.h"
+#include "Casing.generated.h"
 
 UCLASS()
-class FPSMULTIPLAYER_API AProjectile : public AActor
+class FPSMULTIPLAYER_API ACasing : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AProjectile();
+	ACasing();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere)
+	float ShellEjectionImpulse;
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	virtual void Destroyed() override;
-	
+
 private:
-	UPROPERTY(EditAnywhere)
-	class UBoxComponent* CollisionBox;
 	UPROPERTY(VisibleAnywhere)
-	class UProjectileMovementComponent* ProjectileMovementComponent;
+	UStaticMeshComponent* CasingMesh;
 	UPROPERTY(EditAnywhere)
-	class UParticleSystem* Tracer;
-	class UParticleSystemComponent* TracerComponent;
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* ImpactParticleSystem;
-	UPROPERTY(EditAnywhere)
-	class USoundCue* ImpactSound;
+	class USoundCue* ShellSound; 
 };
