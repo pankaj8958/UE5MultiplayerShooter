@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
-
 UENUM(BLueprintType)
 enum class EWeaponState : uint8
 {
@@ -67,8 +66,31 @@ private:
 	class UAnimationAsset* FireAnimation;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ACasing> CasingClass;
+
+	//FOV / Zoom
+	UPROPERTY(EditAnywhere)
+	float ZoomFov = 30.f;
+
+	UPROPERTY(EditAnywhere)
+	float ZoomInterpSpeed = 20.f;
 public:
+	UPROPERTY(EditAnywhere, Category="Crosshairs")
+	class UTexture2D* CrossHairsCentre;
+	
+	UPROPERTY(EditAnywhere, Category="Crosshairs")
+	class UTexture2D* CrossHairsLeft;
+	
+	UPROPERTY(EditAnywhere, Category="Crosshairs")
+	class UTexture2D* CrossHairsRight;
+	
+	UPROPERTY(EditAnywhere, Category="Crosshairs")
+	class UTexture2D* CrossHairsTop;
+	
+	UPROPERTY(EditAnywhere, Category="Crosshairs")
+	class UTexture2D* CrossHairsBottom;
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere() const {return AreaSphere;}
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const {return WeaponMesh;}
+	FORCEINLINE float GetZoomedFOV() const {return ZoomFov;}
+	FORCEINLINE float GetZoomInterpSpeed() const {return ZoomInterpSpeed;}
 };

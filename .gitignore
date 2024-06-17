@@ -8,6 +8,8 @@
 *.lo
 *.o
 *.obj
+*.DS_Store
+*.vsconfig
 
 # Precompiled Headers
 *.gch

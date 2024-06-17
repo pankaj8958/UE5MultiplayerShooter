@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
+#include "FPSMultiplayer/FPSMultiplayer.h"
 #include "FPSMultiplayer/Components/CombatCompoment.h"
 #include "Net/UnrealNetwork.h"
 #include "FPSMultiplayer/Weapon/Weapon.h"
@@ -36,7 +37,9 @@ ABlasterCharacter::ABlasterCharacter()
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetCharacterMovement()->RotationRate = FRotator(0.f,0.f, 850.f);
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
     NetUpdateFrequency = 66.f;
@@ -57,6 +60,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AimOffset(DeltaTime);
+	HideMeshIfCharacterClip();
 }
 
 // Called to bind functionality to input
@@ -292,6 +296,51 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
+void ABlasterCharacter::PlayHitMontage()
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr)
+		return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		FName SectionName;
+		SectionName = FName("Front");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void ABlasterCharacter::MulticastHit_Implementation()
+{
+	PlayHitMontage();
+}
+
+FVector ABlasterCharacter::GetHitTarget() const
+{
+	if (Combat == nullptr) return FVector();
+	return Combat->HitTarget;
+}
+void ABlasterCharacter::HideMeshIfCharacterClip()
+{
+	if(!IsLocallyControlled()) return;
+	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
+	{
+		GetMesh()->SetVisibility(false);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+		}
+	}
+	else
+	{
+		GetMesh()->SetVisibility(true);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
+		}
+	}
+}
+
 
 
 

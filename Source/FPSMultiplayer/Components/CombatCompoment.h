@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "FPSMultiplayer/Widget/BlasterHUD.h"
 #include "CombatCompoment.generated.h"
 #define  TRACE_LENGTH = 80000.f
 class AWeapon;
@@ -38,8 +39,11 @@ protected:
 	void MultiCastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	void TraceUnderCrossHairs(FHitResult& TraceHitResult);
+	void SetHUDCrosshairs(float DeltaTime);
 private:
 	class ABlasterCharacter* Character;
+	class ABlasterPlayerController* PlayerController;
+	class ABlasterHUD* HUD;
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	class AWeapon* EquippedWeapon;
 	UPROPERTY(Replicated)
@@ -51,4 +55,18 @@ private:
 	float AimWalkSpeed;
 
 	bool bFireButtonPressed;
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
+	float CrosshairAimFactor;
+	float CrosshairShootFactor;
+	FVector HitTarget;
+	FHUDPackage HUDPackage;
+	//FOV / Zoom
+	float DefaultFOV;
+	UPROPERTY(EditAnywhere, Category=Combat)
+	float ZoomFOV = 30.f;
+	UPROPERTY(EditAnywhere, Category=Combat)
+	float ZoomInterpSpeed = 20.f;
+	float CurrentFOV = 20.f;
+	void InterpFOV(float Deltatime);
 };

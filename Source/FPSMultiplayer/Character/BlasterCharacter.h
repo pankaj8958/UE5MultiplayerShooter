@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "FPSMultiplayer/BlasterType/TurningInPlace.h"
+#include "FPSMultiplayer/Interface/InteractWithCrosshairInterface.h"
 #include "BlasterCharacter.generated.h"
 
 UCLASS()
-class FPSMULTIPLAYER_API ABlasterCharacter : public ACharacter
+class FPSMULTIPLAYER_API ABlasterCharacter : public ACharacter, public  IInteractWithCrosshairInterface
 {
 	GENERATED_BODY()
 
@@ -21,6 +22,12 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
+	
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
+	void HideMeshIfCharacterClip();
+	UPROPERTY(EditAnywhere)
+	float CameraThreshold = 200.f;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -61,9 +68,12 @@ private:
 	FRotator StartingAimRotation;
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
-
+	void PlayHitMontage();
+	
 	UPROPERTY(EditAnywhere, Category="Combat")
 	class UAnimMontage* FireWeaponMontage;
+	UPROPERTY(EditAnywhere, Category="Combat")
+	class UAnimMontage* HitReactMontage;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
@@ -72,4 +82,6 @@ public:
 	FORCEINLINE float GetAOPitch() const {return  AO_Pitch;}
 	AWeapon* GetEquippedWeapon();
 	FORCEINLINE ETurningInPlace GetTurningInPlace(){return  TurningInPlace;}
+	FVector GetHitTarget() const;
+	FORCEINLINE UCameraComponent* GetFollowCamera(){return FollowCamera;}
 };
