@@ -22,7 +22,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
-	
+	virtual void OnRep_ReplicatedMovement() override;
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();
 	void HideMeshIfCharacterClip();
@@ -40,9 +40,12 @@ protected:
 	void AimButtonPresses();
 	void AimButtonReleased();
 	void AimOffset(float DeltaTime);
+	void CalculateAOPitch();
+	void SimProxiesTurn();
 	virtual void Jump() override;
 	void FireButtonPressed();
 	void FireButtonReleased();
+	
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -74,6 +77,23 @@ private:
 	class UAnimMontage* FireWeaponMontage;
 	UPROPERTY(EditAnywhere, Category="Combat")
 	class UAnimMontage* HitReactMontage;
+
+	bool bRotateRootBone;
+	float TurnThreshold = 0.5f;
+	FRotator ProxyRotationLastFrame;
+	FRotator ProxyRotation;
+	float ProxyYaw;
+	float TimeSinceLastMovementReplication;
+	float CalculateSpeed();
+
+	UPROPERTY(EditAnywhere, Category="Player Stats")
+	float MaxHealth = 100.f;
+	UPROPERTY(ReplicatedUsing=OnRep_health, VisibleAnywhere, Category="Player Stats")
+	float Health = 100.f;
+	UFUNCTION()
+	void OnRep_Health();
+
+	class ABlasterPlayerController* BlasterPlayerController;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
@@ -84,4 +104,5 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace(){return  TurningInPlace;}
 	FVector GetHitTarget() const;
 	FORCEINLINE UCameraComponent* GetFollowCamera(){return FollowCamera;}
+	FORCEINLINE bool ShouldRotateRootBone(){return  bRotateRootBone;}
 };

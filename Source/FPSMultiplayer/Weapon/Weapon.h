@@ -28,6 +28,10 @@ public:
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Fire(const FVector& HitTarget);
+	UPROPERTY(EditAnywhere, Category=Combat)
+	float FireDelay = 0.15f;
+	UPROPERTY(EditAnywhere, Category=Combat)
+	bool bAutomatic = true;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

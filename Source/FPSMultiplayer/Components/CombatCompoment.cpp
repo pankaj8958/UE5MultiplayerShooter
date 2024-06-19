@@ -12,6 +12,9 @@
 #include "Kismet/GameplayStatics.h"
 #include  "FPSMultiplayer/Interface/InteractWithCrosshairInterface.h"
 #include "Net/UnrealNetwork.h"
+#include  "Engine/World.h"
+#include  "TimerManager.h"
+
 // Sets default values for this component's properties
 UCombatCompoment::UCombatCompoment()
 {
@@ -99,14 +102,20 @@ void UCombatCompoment::FireButtonPressed(bool bPressed)
 	bFireButtonPressed = bPressed;
 	if(bFireButtonPressed)
 	{
-		FHitResult HitResult;
-		TraceUnderCrossHairs(HitResult);
-		ServerFire(HitResult.ImpactPoint);
-
+		Fire();
+	}
+}
+void UCombatCompoment::Fire()
+{
+	if(bCanFire)
+	{
+		bCanFire = false;
+		ServerFire(HitTarget);
 		if(EquippedWeapon)
 		{
 			CrosshairShootFactor = 0.75f;
 		}
+		FireTimerStart();
 	}
 }
 void UCombatCompoment::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
@@ -258,6 +267,26 @@ void UCombatCompoment::InterpFOV(float Deltatime)
 		Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);
 	}
 }
+void UCombatCompoment::FireTimerStart()
+{
+	if(EquippedWeapon == nullptr || Character == nullptr) return;
+	Character->GetWorldTimerManager().SetTimer(
+		FireTimer,
+		this,
+		&UCombatCompoment::FireTimerFinished,
+		EquippedWeapon->FireDelay
+		);
+}
+void UCombatCompoment::FireTimerFinished()
+{
+	if(EquippedWeapon == nullptr) return;
+	bCanFire = true;
+	if(bFireButtonPressed && EquippedWeapon->bAutomatic)
+	{
+		Fire();
+	}
+}
+
 
 
 
