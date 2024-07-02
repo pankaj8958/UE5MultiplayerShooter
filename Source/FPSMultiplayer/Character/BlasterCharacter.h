@@ -22,12 +22,14 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
+	void PlayElimMontage();
 	virtual void OnRep_ReplicatedMovement() override;
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
 	void HideMeshIfCharacterClip();
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;
+	void Eliminate();
+	UFUNCTION(NetMultiCast, Reliable)
+	void MulticastEliminate();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,6 +47,9 @@ protected:
 	virtual void Jump() override;
 	void FireButtonPressed();
 	void FireButtonReleased();
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InsigatorController, AActor* DamageCauser);
+	void UpdateHUDHealth();
 	
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -78,6 +83,9 @@ private:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	class UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category="Combat")
+	class UAnimMontage* ElimMontage;
+
 	bool bRotateRootBone;
 	float TurnThreshold = 0.5f;
 	FRotator ProxyRotationLastFrame;
@@ -94,6 +102,12 @@ private:
 	void OnRep_Health();
 
 	class ABlasterPlayerController* BlasterPlayerController;
+	bool bIsElim = false;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+	FTimerHandle ElimTimer;
+	void ElimTimerFinished();
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
@@ -105,4 +119,5 @@ public:
 	FVector GetHitTarget() const;
 	FORCEINLINE UCameraComponent* GetFollowCamera(){return FollowCamera;}
 	FORCEINLINE bool ShouldRotateRootBone(){return  bRotateRootBone;}
+	FORCEINLINE bool IsElimmed(){return  bIsElim;}
 };

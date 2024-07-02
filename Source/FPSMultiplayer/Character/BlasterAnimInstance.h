@@ -62,4 +62,6 @@ class FPSMULTIPLAYER_API UBlasterAnimInstance : public UAnimInstance
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bRotateRootBone;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bIsElimmed;
 };

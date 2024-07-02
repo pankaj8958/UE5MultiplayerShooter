@@ -107,7 +107,7 @@ void UCombatCompoment::FireButtonPressed(bool bPressed)
 }
 void UCombatCompoment::Fire()
 {
-	if(bCanFire)
+	if(EquippedWeapon && bCanFire)
 	{
 		bCanFire = false;
 		ServerFire(HitTarget);

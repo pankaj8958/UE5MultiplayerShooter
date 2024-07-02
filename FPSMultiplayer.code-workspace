@@ -298,6 +298,556 @@
 				}
 			},
 			{
+				"label": "FPSMultiplayer IOS Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Debug",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Debug",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer IOS Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Debug",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"DebugGame",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"DebugGame",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer IOS DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"DebugGame",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Development",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Development",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer IOS Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Development",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Test",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Test",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer IOS Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Test",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Shipping",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Shipping",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer IOS Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer IOS Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"IOS",
+					"Shipping",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Debug",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Debug",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer TVOS Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Debug",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"DebugGame",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"DebugGame",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer TVOS DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"DebugGame",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Development",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Development",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer TVOS Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Development",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Test",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Test",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer TVOS Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Test",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Shipping",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Shipping",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FPSMultiplayer TVOS Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
+				"label": "FPSMultiplayer TVOS Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+				"args": [
+					"FPSMultiplayer",
+					"TVOS",
+					"Shipping",
+					"/Users/pankaj/Documents/Workspace/UE5MultiplayerShooter/FPSMultiplayer.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/Users/Shared/Epic Games/UE_5.4"
+				}
+			},
+			{
 				"label": "FPSMultiplayerEditor Mac Debug Build",
 				"group": "build",
 				"command": "Engine/Build/BatchFiles/Mac/Build.sh",

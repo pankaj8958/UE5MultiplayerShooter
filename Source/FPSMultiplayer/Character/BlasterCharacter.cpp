@@ -9,10 +9,12 @@
 #include "Components/WidgetComponent.h"
 #include "FPSMultiplayer/FPSMultiplayer.h"
 #include "FPSMultiplayer/Components/CombatCompoment.h"
+#include "FPSMultiplayer/GameMode/BlasterGameMode.h"
 #include "Net/UnrealNetwork.h"
 #include "FPSMultiplayer/Weapon/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
 #include  "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
+#include "TimerManager.h"
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -62,10 +64,10 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &Ou
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	BlasterPlayerController = Cast<ABlasterPlayerController>(Controller);
-	if(BlasterPlayerController)
+	UpdateHUDHealth();
+	if(HasAuthority())
 	{
-		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);
 	}
 }
 
@@ -363,6 +365,14 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
+void ABlasterCharacter::PlayElimMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && ElimMontage)
+	{
+		AnimInstance->Montage_Play(ElimMontage);
+	}
+}
 void ABlasterCharacter::PlayHitMontage()
 {
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr)
@@ -375,11 +385,6 @@ void ABlasterCharacter::PlayHitMontage()
 		SectionName = FName("Front");
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
-}
-
-void ABlasterCharacter::MulticastHit_Implementation()
-{
-	PlayHitMontage();
 }
 
 FVector ABlasterCharacter::GetHitTarget() const
@@ -407,11 +412,62 @@ void ABlasterCharacter::HideMeshIfCharacterClip()
 		}
 	}
 }
+void ABlasterCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, AController* InsigatorController, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health-Damage, 0.f, MaxHealth);
+	UpdateHUDHealth();
+	PlayHitMontage();
+	UE_LOG(LogTemp, Warning, TEXT("Health Remain: %f"), Health);
+	if(Health == 0.f)
+	{
+		ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+		if(BlasterGameMode)
+		{
+			BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+			ABlasterPlayerController* AttackerController = Cast<ABlasterPlayerController>(InsigatorController);
+			BlasterGameMode->PlayerEliminated(this, BlasterPlayerController, AttackerController);
+		}
+	}
+}
 
 void ABlasterCharacter::OnRep_Health()
 {
-	
+	UpdateHUDHealth();
+	PlayHitMontage();
 }
+void ABlasterCharacter::UpdateHUDHealth()
+{
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+	if(BlasterPlayerController)
+	{
+		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+void ABlasterCharacter::Eliminate()
+{
+	MulticastEliminate();
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&ABlasterCharacter::ElimTimerFinished,
+		ElimDelay
+	);
+}
+void ABlasterCharacter::MulticastEliminate_Implementation()
+{
+	bIsElim = true;
+	PlayElimMontage();
+}
+
+void ABlasterCharacter::ElimTimerFinished()
+{
+	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	if(BlasterGameMode)
+	{
+		BlasterGameMode->RequestRespawn(this, Controller);
+	}
+}
+
 
 
 
