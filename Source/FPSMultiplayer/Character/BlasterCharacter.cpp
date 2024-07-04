@@ -47,6 +47,8 @@ ABlasterCharacter::ABlasterCharacter()
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
     NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
+
+	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 void ABlasterCharacter::OnRep_ReplicatedMovement()
 {
@@ -199,6 +201,8 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 		LastWeapon->ShowPickupWidget(false);
 	}
 }
+
+
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon *Weapon)
 {
@@ -445,6 +449,10 @@ void ABlasterCharacter::UpdateHUDHealth()
 }
 void ABlasterCharacter::Eliminate()
 {
+	if(Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Dropped();
+	}
 	MulticastEliminate();
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
@@ -457,6 +465,24 @@ void ABlasterCharacter::MulticastEliminate_Implementation()
 {
 	bIsElim = true;
 	PlayElimMontage();
+	if(DissolveMaterialInstance)
+	{
+		DynamicDissolveMaterial = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, DynamicDissolveMaterial);
+		DynamicDissolveMaterial->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
+		DynamicDissolveMaterial->SetScalarParameterValue(TEXT("Glow"), 200.f);
+	}
+	StartDissolve();
+
+	//Disable character control and collision
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	if(BlasterPlayerController)
+	{
+		DisableInput(BlasterPlayerController);
+	}
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABlasterCharacter::ElimTimerFinished()
@@ -467,7 +493,23 @@ void ABlasterCharacter::ElimTimerFinished()
 		BlasterGameMode->RequestRespawn(this, Controller);
 	}
 }
+void ABlasterCharacter::UpdateDissolveMaterial(float DissolveValue)
+{
+	if(DynamicDissolveMaterial)
+	{
+		DynamicDissolveMaterial->SetScalarParameterValue(TEXT("Dissolve"), DissolveValue);
+	}
+}
 
+void ABlasterCharacter::StartDissolve()
+{
+	DissolveTrack.BindDynamic(this, &ABlasterCharacter::UpdateDissolveMaterial);
+	if(DissolveCurve && DissolveTimeline)
+	{
+		DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
+		DissolveTimeline->Play();
+	}
+}
 
 
 

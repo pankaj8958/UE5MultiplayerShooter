@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "FPSMultiplayer/BlasterType/TurningInPlace.h"
 #include "FPSMultiplayer/Interface/InteractWithCrosshairInterface.h"
+#include "Components/TimelineComponent.h"
 #include "BlasterCharacter.generated.h"
 
 UCLASS()
@@ -108,6 +109,22 @@ private:
 	float ElimDelay = 3.f;
 	FTimerHandle ElimTimer;
 	void ElimTimerFinished();
+	
+	UPROPERTY(VisibleAnywhere)
+	UTimelineComponent* DissolveTimeline;
+	FOnTimelineFloat DissolveTrack;
+
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* DissolveCurve;
+
+	UFUNCTION()
+	void UpdateDissolveMaterial(float DissolveValue);
+	void StartDissolve();
+
+	UPROPERTY(VisibleANywhere, Category = Elim)
+	UMaterialInstanceDynamic* DynamicDissolveMaterial;
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UMaterialInstance* DissolveMaterialInstance;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
@@ -120,4 +137,6 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera(){return FollowCamera;}
 	FORCEINLINE bool ShouldRotateRootBone(){return  bRotateRootBone;}
 	FORCEINLINE bool IsElimmed(){return  bIsElim;}
+	FORCEINLINE float GetHealth(){return  Health;}
+	FORCEINLINE float GetMaxHealth(){return  MaxHealth;}
 };

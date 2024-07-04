@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "FPSMultiplayer/Widget/BlasterHUD.h"
 #include "FPSMultiplayer/Widget/CharacterOverlay.h"
+#include "FPSMultiplayer/Character/BlasterCharacter.h"
 
 void ABlasterPlayerController::BeginPlay()
 {
@@ -15,6 +16,7 @@ void ABlasterPlayerController::BeginPlay()
 void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	if(BlasterHUD)
 	if(BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HealthBar && BlasterHUD->CharacterOverlay->HealthText)
 	{
 		const float HealthPercent = Health/MaxHealth;
@@ -24,3 +26,12 @@ void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 	}
 }
 
+void ABlasterPlayerController::OnPossess(APawn *InPawn)
+{
+	Super::OnPossess(InPawn);
+	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(InPawn);
+	if(BlasterCharacter)
+	{
+		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
+	}
+}
