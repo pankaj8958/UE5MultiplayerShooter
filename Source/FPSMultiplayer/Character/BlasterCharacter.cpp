@@ -14,6 +14,7 @@
 #include "FPSMultiplayer/Weapon/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
 #include  "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
+#include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
 #include "TimerManager.h"
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -72,7 +73,18 @@ void ABlasterCharacter::BeginPlay()
 		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);
 	}
 }
-
+void ABlasterCharacter::PollInit()
+{
+	if(BlasterPlayerState == nullptr)
+	{
+		BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
+		if(BlasterPlayerState)
+		{
+			BlasterPlayerState->AddToScore(0.f);
+			BlasterPlayerState->AddDefeats(0);
+		}
+	}
+}
 void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -89,6 +101,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		CalculateAOPitch();
 	}
 	HideMeshIfCharacterClip();
+	PollInit();
 }
 
 // Called to bind functionality to input
@@ -201,8 +214,6 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 		LastWeapon->ShowPickupWidget(false);
 	}
 }
-
-
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon *Weapon)
 {

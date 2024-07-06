@@ -5,9 +5,26 @@
 #include "FPSMultiplayer/Character/BlasterCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
+#include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
+
 void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* ElimedCharacter, ABlasterPlayerController* VictimController, ABlasterPlayerController* AttackerController)
 {
-	if(ElimedCharacter)
+    if(AttackerController == nullptr || AttackerController->PlayerState == nullptr) return;
+    if(VictimController == nullptr || VictimController->PlayerState == nullptr) return;
+
+    ABlasterPlayerState* AttackerPlayerState = AttackerController ? Cast<ABlasterPlayerState>(AttackerController->PlayerState) : nullptr;
+    ABlasterPlayerState* VictimPlayerState = VictimController ? Cast<ABlasterPlayerState>(VictimController->PlayerState) : nullptr;
+	
+    if(AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
+    {
+        AttackerPlayerState->AddToScore(1.f);
+    }
+    if(VictimPlayerState)
+    {
+        VictimPlayerState->AddDefeats(1);
+    }
+    if(ElimedCharacter)
     {
         ElimedCharacter->Eliminate();
     }

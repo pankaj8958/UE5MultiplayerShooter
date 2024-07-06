@@ -51,6 +51,7 @@ protected:
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InsigatorController, AActor* DamageCauser);
 	void UpdateHUDHealth();
+	void PollInit();
 	
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -125,6 +126,8 @@ private:
 	UMaterialInstanceDynamic* DynamicDissolveMaterial;
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
+	UPROPERTY()
+	class ABlasterPlayerState* BlasterPlayerState;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
