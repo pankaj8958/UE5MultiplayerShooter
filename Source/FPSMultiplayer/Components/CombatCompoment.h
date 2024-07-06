@@ -74,4 +74,6 @@ private:
 	void FireTimerStart();
 	void FireTimerFinished();
 	void Fire();
+
+	bool CanFire();
 };

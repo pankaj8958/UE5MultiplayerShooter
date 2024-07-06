@@ -24,6 +24,7 @@ class FPSMULTIPLAYER_API AWeapon : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AWeapon();
+	virtual void OnRep_Owner() override;
 	virtual void Tick(float DeltaTime) override;
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -33,6 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, Category=Combat)
 	bool bAutomatic = true;
 	void Dropped();
+	void SetHudWeaponAmmo();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -72,6 +74,20 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ACasing> CasingClass;
 
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	int32 Ammo;
+
+	UFUNCTION()
+	void OnRep_Ammo();
+	void SpendRound();
+
+	UPROPERTY(EditAnywhere)
+	int32 MagCapacity;
+
+	UPROPERTY()
+	class ABlasterCharacter* BlasterOwnerCharacter;
+	UPROPERTY()
+	class ABlasterPlayerController* BlasterOwnerController;
 	//FOV / Zoom
 	UPROPERTY(EditAnywhere)
 	float ZoomFov = 30.f;
@@ -98,4 +114,5 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const {return WeaponMesh;}
 	FORCEINLINE float GetZoomedFOV() const {return ZoomFov;}
 	FORCEINLINE float GetZoomInterpSpeed() const {return ZoomInterpSpeed;}
+	bool IsEmpty();
 };

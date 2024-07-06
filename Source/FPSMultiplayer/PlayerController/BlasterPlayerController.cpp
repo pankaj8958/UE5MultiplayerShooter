@@ -45,7 +45,6 @@ void ABlasterPlayerController::SetHUDDefeats(int32 Value)
 		BlasterHUD->CharacterOverlay->DefeatsAmt->SetText(FText::FromString(DefeatsText));
 	}
 }
-
 void ABlasterPlayerController::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -55,3 +54,14 @@ void ABlasterPlayerController::OnPossess(APawn *InPawn)
 		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
 	}
 }
+
+void ABlasterPlayerController::SetHUDWeaponAmmo(int32 Value)
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	if(BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->WeaponAmmoAmt)
+	{
+		FString AmmoText = FString::Printf(TEXT("%d"), Value);
+		BlasterHUD->CharacterOverlay->WeaponAmmoAmt->SetText(FText::FromString(AmmoText));
+	}
+}
+

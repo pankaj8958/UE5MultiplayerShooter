@@ -78,6 +78,10 @@ void UCombatCompoment::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if(Character == nullptr || WeaponToEquip == nullptr)
 		return;
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
+	}
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
@@ -86,6 +90,7 @@ void UCombatCompoment::EquipWeapon(AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
+	EquippedWeapon->SetHudWeaponAmmo();
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
 }
@@ -113,7 +118,7 @@ void UCombatCompoment::FireButtonPressed(bool bPressed)
 }
 void UCombatCompoment::Fire()
 {
-	if(EquippedWeapon && bCanFire)
+	if(EquippedWeapon && CanFire())
 	{
 		bCanFire = false;
 		ServerFire(HitTarget);
@@ -124,7 +129,7 @@ void UCombatCompoment::Fire()
 		FireTimerStart();
 	}
 }
-void UCombatCompoment::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
+void UCombatCompoment::ServerFire_Implementation(const FVector_NetQuantize &TraceHitTarget)
 {
 	MultiCastFire(TraceHitTarget);
 }
@@ -292,7 +297,12 @@ void UCombatCompoment::FireTimerFinished()
 		Fire();
 	}
 }
-
+bool UCombatCompoment::CanFire()
+{
+	if(EquippedWeapon == nullptr)
+		return false;
+	return !EquippedWeapon->IsEmpty() || !bCanFire;
+}
 
 
 
