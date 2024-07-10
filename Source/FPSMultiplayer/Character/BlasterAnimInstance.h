@@ -28,6 +28,7 @@ class FPSMULTIPLAYER_API UBlasterAnimInstance : public UAnimInstance
 	bool bIsAccelerating;
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bWeaponEquipped;
+	
 	class AWeapon* EquippedWeapon;
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bIsCrouched;
@@ -64,4 +65,10 @@ class FPSMULTIPLAYER_API UBlasterAnimInstance : public UAnimInstance
 	bool bRotateRootBone;
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bIsElimmed;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bUseFabrik;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bUseAimOffsets;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bTransformRightHand;
 };

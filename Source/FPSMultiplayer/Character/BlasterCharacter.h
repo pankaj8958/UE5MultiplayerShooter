@@ -7,6 +7,7 @@
 #include "FPSMultiplayer/BlasterType/TurningInPlace.h"
 #include "FPSMultiplayer/Interface/InteractWithCrosshairInterface.h"
 #include "Components/TimelineComponent.h"
+#include "FPSMultiplayer/BlasterType/CombatState.h"
 #include "BlasterCharacter.generated.h"
 
 UCLASS()
@@ -24,6 +25,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
 	void PlayElimMontage();
+	void PlayReloadMontage();
 	virtual void OnRep_ReplicatedMovement() override;
 	void HideMeshIfCharacterClip();
 	UPROPERTY(EditAnywhere)
@@ -40,6 +42,7 @@ protected:
 	void LookUp(float Value);
 	void EquippeButtonP̦ressed();
 	void CrouchButtonPressed();
+	void ReloadButtonPressed();
 	void AimButtonPresses();
 	void AimButtonReleased();
 	void AimOffset(float DeltaTime);
@@ -67,8 +70,8 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
-	UPROPERTY(VisibleAnywhere)
-	class UCombatCompoment* Combat;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UCombatCompoment* PlayerCombat;
 
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
@@ -84,6 +87,8 @@ private:
 	class UAnimMontage* FireWeaponMontage;
 	UPROPERTY(EditAnywhere, Category="Combat")
 	class UAnimMontage* HitReactMontage;
+	UPROPERTY(EditAnywhere, Category="Combat")
+	class UAnimMontage* ReloadMontage;
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	class UAnimMontage* ElimMontage;
@@ -142,4 +147,5 @@ public:
 	FORCEINLINE bool IsElimmed(){return  bIsElim;}
 	FORCEINLINE float GetHealth(){return  Health;}
 	FORCEINLINE float GetMaxHealth(){return  MaxHealth;}
+	ECombatType GetCombatState() const;
 };

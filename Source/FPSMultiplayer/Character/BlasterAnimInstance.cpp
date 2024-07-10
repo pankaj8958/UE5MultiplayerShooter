@@ -6,6 +6,7 @@
 #include "FPSMultiplayer/Weapon/Weapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "FPSMultiplayer/BlasterType/CombatState.h"
 
 void UBlasterAnimInstance::NativeInitializeAnimation()
 {
@@ -69,4 +70,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
             RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaTime, 30.f);
         }
     }
+    bUseFabrik = BlasterCharacter->GetCombatState() != ECombatType::ECS_Reloading;
+    bUseAimOffsets = BlasterCharacter->GetCombatState() != ECombatType::ECS_Reloading;
+    bTransformRightHand = BlasterCharacter->GetCombatState() != ECombatType::ECS_Reloading;
 }

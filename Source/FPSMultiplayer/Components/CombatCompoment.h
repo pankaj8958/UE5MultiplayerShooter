@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "FPSMultiplayer/Widget/BlasterHUD.h"
+#include "FPSMultiplayer/Weapon/WeaponTypes.h"
+#include "Containers/Map.h"
+#include "FPSMultiplayer/BlasterType/CombatState.h"
 #include "CombatCompoment.generated.h"
 #define  TRACE_LENGTH = 80000.f
 class AWeapon;
@@ -21,6 +24,9 @@ public:
 
 	friend  class ABlasterCharacter;
 	void EquipWeapon(AWeapon* WeaponToEquip);
+	void Reload();
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -40,15 +46,20 @@ protected:
 
 	void TraceUnderCrossHairs(FHitResult& TraceHitResult);
 	void SetHUDCrosshairs(float DeltaTime);
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+	void HandleReload();
+	int32 AmountToReload();
 private:
 	class ABlasterCharacter* Character;
 	class ABlasterPlayerController* PlayerController;
 	class ABlasterHUD* HUD;
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	class AWeapon* EquippedWeapon;
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
 	bool bAiming;
-
+	UFUNCTION()
+	void OnRep_Aiming();
 	UPROPERTY(EditAnywhere)
 	float BaseWalkSpeed;
 	UPROPERTY(EditAnywhere)
@@ -76,4 +87,22 @@ private:
 	void Fire();
 
 	bool CanFire();
+	UPROPERTY(ReplicatedUsing = OnRep_CarryAmmo)
+	int32 CarryAmmo;
+	UFUNCTION()
+	void OnRep_CarryAmmo();
+	TMap<EWeaponType, int32> CarryAmmoMap;
+
+	UPROPERTY(EditAnywhere)	
+	int32 StartingAmmo = 30;
+	
+	void InitializeCarryAmmo();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatType CombatState = ECombatType::ECS_Unoccupied;
+
+	UFUNCTION()
+	void OnRep_CombatState();
+
+	void UpdateAmmoValues();
 };

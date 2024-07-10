@@ -149,6 +149,11 @@ void AWeapon::SpendRound()
 	Ammo = FMath::Clamp(Ammo-1, 0, MagCapacity);
 	SetHudWeaponAmmo();
 }
+void AWeapon::AddAmmo(int32 AmmoAmt)
+{
+	Ammo = FMath::Clamp(Ammo - AmmoAmt, 0 , MagCapacity);
+	SetHudWeaponAmmo();
+}
 void AWeapon::SetHudWeaponAmmo()
 {
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;

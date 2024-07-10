@@ -13,8 +13,9 @@
 #include "Net/UnrealNetwork.h"
 #include "FPSMultiplayer/Weapon/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
-#include  "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
+#include "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
 #include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
+#include "FPSMultiplayer/Weapon/WeaponTypes.h"
 #include "TimerManager.h"
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -36,8 +37,8 @@ ABlasterCharacter::ABlasterCharacter()
 	OverHeadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverHeadWidget"));
 	OverHeadWidget->SetupAttachment(RootComponent);
 
-	Combat = CreateDefaultSubobject<UCombatCompoment>(TEXT("CombatComponent"));
-	Combat->SetIsReplicated(true);
+	PlayerCombat = CreateDefaultSubobject<UCombatCompoment>(TEXT("CombatComponent"));
+	PlayerCombat->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -112,6 +113,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABlasterCharacter::Jump);
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ABlasterCharacter::EquippeButtonP̦ressed);
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ABlasterCharacter::CrouchButtonPressed);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABlasterCharacter::ReloadButtonPressed);
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ABlasterCharacter::AimButtonPresses);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ABlasterCharacter::AimButtonReleased);
 	
@@ -126,9 +128,9 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 void ABlasterCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if(Combat)
+	if(PlayerCombat)
 	{
-		Combat->Character = this;
+		PlayerCombat->Character = this;
 	}
 }
 void ABlasterCharacter::MoveForward(float Value)
@@ -160,11 +162,11 @@ void ABlasterCharacter::LookUp(float Value)
 
 void ABlasterCharacter::EquippeButtonP̦ressed()
 {
-	if(Combat)
+	if(PlayerCombat)
 	{
 		if(HasAuthority())
 		{
-			Combat->EquipWeapon(OverlappingWeapon);
+			PlayerCombat->EquipWeapon(OverlappingWeapon);
 		}
 		else
 		{
@@ -182,25 +184,32 @@ void ABlasterCharacter::CrouchButtonPressed()
 		Crouch();		
 	}
 }
+void ABlasterCharacter::ReloadButtonPressed()
+{
+	if(PlayerCombat)
+	{
+		PlayerCombat->Reload();
+	}
+}
 void ABlasterCharacter::AimButtonPresses()
 {
-	if(Combat)
+	if(PlayerCombat)
 	{
-		Combat->SetAiming(true);
+		PlayerCombat->SetAiming(true);
 	}
 }
 void ABlasterCharacter::AimButtonReleased()
 {
-	if(Combat)
+	if(PlayerCombat)
 	{
-		Combat->SetAiming(false);
+		PlayerCombat->SetAiming(false);
 	}
 }
 void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 {
-	if(Combat)
+	if(PlayerCombat)
 	{
-		Combat->EquipWeapon(OverlappingWeapon);
+		PlayerCombat->EquipWeapon(OverlappingWeapon);
 	}
 }
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
@@ -232,15 +241,15 @@ void ABlasterCharacter::SetOverlappingWeapon(AWeapon *Weapon)
 }
 bool ABlasterCharacter::IsWeaponEquipped()
 {
-	return (Combat && Combat->EquippedWeapon);
+	return (PlayerCombat && PlayerCombat->EquippedWeapon);
 }
 bool ABlasterCharacter::IsAiming()
 {
-	return  (Combat && Combat->bAiming);
+	return  (PlayerCombat && PlayerCombat->bAiming);
 }
 void ABlasterCharacter::AimOffset(float DeltaTime)
 {
-	if(Combat && Combat->EquippedWeapon == nullptr) return;
+	if(PlayerCombat && PlayerCombat->EquippedWeapon == nullptr) return;
 	float Speed = CalculateSpeed();
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
 	if(Speed == 0.f && !bIsInAir)//Standing still
@@ -278,7 +287,7 @@ void ABlasterCharacter::CalculateAOPitch()
 }
 void ABlasterCharacter::SimProxiesTurn()
 {
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	if(PlayerCombat == nullptr || PlayerCombat->EquippedWeapon == nullptr) return;
 	bRotateRootBone = false;
 	float Speed = CalculateSpeed();
 	if(Speed > 0.f)
@@ -338,9 +347,9 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 }
 AWeapon* ABlasterCharacter::GetEquippedWeapon()
 {
-	if(Combat == nullptr)
+	if(PlayerCombat == nullptr)
 		return  nullptr;
-	return  Combat->EquippedWeapon;
+	return  PlayerCombat->EquippedWeapon;
 }
 void ABlasterCharacter::Jump()
 {
@@ -355,21 +364,21 @@ void ABlasterCharacter::Jump()
 }
 void ABlasterCharacter::FireButtonPressed()
 {
-	if(Combat)
+	if(PlayerCombat)
 	{
-		Combat->FireButtonPressed(true);
+		PlayerCombat->FireButtonPressed(true);
 	}
 }
 void ABlasterCharacter::FireButtonReleased()
 {
-	if(Combat)
+	if(PlayerCombat)
 	{
-		Combat->FireButtonPressed(false);
+		PlayerCombat->FireButtonPressed(false);
 	}
 }
 void ABlasterCharacter::PlayFireMontage(bool bAiming)
 {
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr)
+	if(PlayerCombat == nullptr || PlayerCombat->EquippedWeapon == nullptr)
 		return;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if(AnimInstance && FireWeaponMontage)
@@ -377,6 +386,27 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 		AnimInstance->Montage_Play(FireWeaponMontage);
 		FName SectionName;
 		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+void ABlasterCharacter::PlayReloadMontage()
+{
+	if(PlayerCombat == nullptr || PlayerCombat->EquippedWeapon == nullptr)
+		return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName;
+
+		switch (PlayerCombat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponType::EWT_AssaultRifle:
+			SectionName = FName("Rifle");
+			break;
+		default:
+			break;
+		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
@@ -390,7 +420,7 @@ void ABlasterCharacter::PlayElimMontage()
 }
 void ABlasterCharacter::PlayHitMontage()
 {
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr)
+	if(PlayerCombat == nullptr || PlayerCombat->EquippedWeapon == nullptr)
 		return;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if(AnimInstance && HitReactMontage)
@@ -404,8 +434,8 @@ void ABlasterCharacter::PlayHitMontage()
 
 FVector ABlasterCharacter::GetHitTarget() const
 {
-	if (Combat == nullptr) return FVector();
-	return Combat->HitTarget;
+	if (PlayerCombat == nullptr) return FVector();
+	return PlayerCombat->HitTarget;
 }
 void ABlasterCharacter::HideMeshIfCharacterClip()
 {
@@ -413,17 +443,17 @@ void ABlasterCharacter::HideMeshIfCharacterClip()
 	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
 	{
 		GetMesh()->SetVisibility(false);
-		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		if(PlayerCombat && PlayerCombat->EquippedWeapon && PlayerCombat->EquippedWeapon->GetWeaponMesh())
 		{
-			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+			PlayerCombat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
 		}
 	}
 	else
 	{
 		GetMesh()->SetVisibility(true);
-		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		if(PlayerCombat && PlayerCombat->EquippedWeapon && PlayerCombat->EquippedWeapon->GetWeaponMesh())
 		{
-			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
+			PlayerCombat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
 		}
 	}
 }
@@ -460,9 +490,9 @@ void ABlasterCharacter::UpdateHUDHealth()
 }
 void ABlasterCharacter::Eliminate()
 {
-	if(Combat && Combat->EquippedWeapon)
+	if(PlayerCombat && PlayerCombat->EquippedWeapon)
 	{
-		Combat->EquippedWeapon->Dropped();
+		PlayerCombat->EquippedWeapon->Dropped();
 	}
 	MulticastEliminate();
 	GetWorldTimerManager().SetTimer(
@@ -525,7 +555,11 @@ void ABlasterCharacter::StartDissolve()
 		DissolveTimeline->Play();
 	}
 }
-
+ECombatType ABlasterCharacter::GetCombatState() const
+{
+    if (PlayerCombat == nullptr) return ECombatType::ECS_MAX;
+	return PlayerCombat->CombatState;
+}
 
 
 

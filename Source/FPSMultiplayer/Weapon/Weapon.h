@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WeaponTypes.h"
 #include "Weapon.generated.h"
 UENUM(BLueprintType)
 enum class EWeaponState : uint8
@@ -35,6 +36,9 @@ public:
 	bool bAutomatic = true;
 	void Dropped();
 	void SetHudWeaponAmmo();
+	void AddAmmo(int32 AmmoAmt);
+	UPROPERTY(EditAnywhere)
+	class USoundCue* EquipSound;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -94,6 +98,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float ZoomInterpSpeed = 20.f;
+
+	UPROPERTY(EditAnywhere)
+	EWeaponType WeaponType;
+
 public:
 	UPROPERTY(EditAnywhere, Category="Crosshairs")
 	class UTexture2D* CrossHairsCentre;
@@ -115,4 +123,8 @@ public:
 	FORCEINLINE float GetZoomedFOV() const {return ZoomFov;}
 	FORCEINLINE float GetZoomInterpSpeed() const {return ZoomInterpSpeed;}
 	bool IsEmpty();
+	FORCEINLINE EWeaponType GetWeaponType() const {return WeaponType;}
+	FORCEINLINE int32 GetAmmo() const {return  Ammo;}
+	FORCEINLINE int32 GetMagCapacity() const {return  MagCapacity;}
+	 
 };
