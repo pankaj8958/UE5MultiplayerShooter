@@ -8,6 +8,39 @@
 #include "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
 #include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
 
+ABlasterGameMode::ABlasterGameMode()
+{
+    bDelayedStart = true;
+}
+void ABlasterGameMode::BeginPlay()
+{
+    Super::BeginPlay();
+    LevelStartingTime = GetWorld()->GetTimeSeconds();
+}
+void ABlasterGameMode::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    if(MatchState == MatchState::WaitingToStart)
+    {
+        CountDownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+        if(CountDownTime <= 0.f)
+        {
+            StartMatch();
+        }
+    }
+}
+void ABlasterGameMode::OnMatchStateSet()
+{
+    Super::OnMatchStateSet();
+    for( FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        ABlasterPlayerController* BlasterPlayer = Cast<ABlasterPlayerController>(*It);
+        if(BlasterPlayer)
+        {
+            BlasterPlayer->OnMatchStateSet(MatchState);
+        }
+    }
+}
 void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* ElimedCharacter, ABlasterPlayerController* VictimController, ABlasterPlayerController* AttackerController)
 {
     if(AttackerController == nullptr || AttackerController->PlayerState == nullptr) return;
@@ -45,3 +78,4 @@ void ABlasterGameMode::RequestRespawn(ACharacter *ElimCharacter, AController *El
         RestartPlayerAtPlayerStart(ElimController, PlayerStarts[Selection]);
     }
 }
+
