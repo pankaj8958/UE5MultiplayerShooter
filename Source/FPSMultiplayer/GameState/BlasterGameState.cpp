@@ -1,0 +1,31 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "BlasterGameState.h"
+#include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
+#include "Net/UnrealNetwork.h"
+
+void ABlasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABlasterGameState, TopScoringPlayers);
+}
+
+void ABlasterGameState::UpdateTopScore(ABlasterPlayerState* ScorePLayer)
+{
+	if(TopScoringPlayers.Num() == 0)
+	{
+		TopScoringPlayers.Add(ScorePLayer);
+		TopScore = ScorePLayer->GetScore();
+	}
+	else if(ScorePLayer->GetScore() == TopScore)
+	{
+		TopScoringPlayers.AddUnique(ScorePLayer);
+	}
+	else if(ScorePLayer->GetScore() > TopScore)
+	{
+		TopScoringPlayers.Empty();
+		TopScoringPlayers.AddUnique(ScorePLayer);
+		TopScore = ScorePLayer->GetScore();
+	}
+}

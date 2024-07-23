@@ -17,6 +17,7 @@
 #include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
 #include "FPSMultiplayer/Weapon/WeaponTypes.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -64,7 +65,20 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(ABlasterCharacter, Health);
+	DOREPLIFETIME(ABlasterCharacter, bDisplayGameplay);
 }
+
+void ABlasterCharacter::Destroyed()
+{
+	Super::Destroyed();
+	ABlasterGameMode* BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+	bool bMatchNotInProgress = BlasterGameMode && BlasterGameMode->GetMatchState() != MatchState::InProgress;
+	if(PlayerCombat && PlayerCombat->EquippedWeapon && bMatchNotInProgress)
+	{
+		PlayerCombat->EquippedWeapon->Destroyed();
+	}
+}
+
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -86,9 +100,15 @@ void ABlasterCharacter::PollInit()
 		}
 	}
 }
-void ABlasterCharacter::Tick(float DeltaTime)
+
+void ABlasterCharacter::RotateInPlace(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	if(bDisplayGameplay)
+	{
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
 	if(GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
 	{
 		AimOffset(DeltaTime);
@@ -101,6 +121,12 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		}
 		CalculateAOPitch();
 	}
+}
+
+void ABlasterCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	RotateInPlace(DeltaTime);
 	HideMeshIfCharacterClip();
 	PollInit();
 }
@@ -135,6 +161,7 @@ void ABlasterCharacter::PostInitializeComponents()
 }
 void ABlasterCharacter::MoveForward(float Value)
 {
+	if(bDisplayGameplay) return;
 	if(Controller != nullptr && Value != 0.f)
 	{
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
@@ -145,6 +172,7 @@ void ABlasterCharacter::MoveForward(float Value)
 
 void ABlasterCharacter::MoveRight(float Value)
 {
+	if(bDisplayGameplay) return;
 	const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 	const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 	AddMovementInput(Direction, Value);
@@ -162,6 +190,7 @@ void ABlasterCharacter::LookUp(float Value)
 
 void ABlasterCharacter::EquippeButtonP̦ressed()
 {
+	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
 		if(HasAuthority())
@@ -176,6 +205,7 @@ void ABlasterCharacter::EquippeButtonP̦ressed()
 }
 void ABlasterCharacter::CrouchButtonPressed()
 {
+	if(bDisplayGameplay) return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -186,6 +216,7 @@ void ABlasterCharacter::CrouchButtonPressed()
 }
 void ABlasterCharacter::ReloadButtonPressed()
 {
+	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->Reload();
@@ -193,6 +224,7 @@ void ABlasterCharacter::ReloadButtonPressed()
 }
 void ABlasterCharacter::AimButtonPresses()
 {
+	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->SetAiming(true);
@@ -200,6 +232,7 @@ void ABlasterCharacter::AimButtonPresses()
 }
 void ABlasterCharacter::AimButtonReleased()
 {
+	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->SetAiming(false);
@@ -353,6 +386,7 @@ AWeapon* ABlasterCharacter::GetEquippedWeapon()
 }
 void ABlasterCharacter::Jump()
 {
+	if(bDisplayGameplay) return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -364,6 +398,7 @@ void ABlasterCharacter::Jump()
 }
 void ABlasterCharacter::FireButtonPressed()
 {
+	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->FireButtonPressed(true);
@@ -371,6 +406,7 @@ void ABlasterCharacter::FireButtonPressed()
 }
 void ABlasterCharacter::FireButtonReleased()
 {
+	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->FireButtonPressed(false);
@@ -522,9 +558,11 @@ void ABlasterCharacter::MulticastEliminate_Implementation()
 	//Disable character control and collision
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	if(BlasterPlayerController)
+	bDisplayGameplay = true;
+	GetCharacterMovement()->DisableMovement();
+	if(PlayerCombat)
 	{
-		DisableInput(BlasterPlayerController);
+		PlayerCombat->FireButtonPressed(false);
 	}
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

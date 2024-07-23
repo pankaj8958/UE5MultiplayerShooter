@@ -3,11 +3,15 @@
 
 #include "BlasterGameMode.h"
 #include "FPSMultiplayer/Character/BlasterCharacter.h"
+#include "FPSMultiplayer/GameState/BlasterGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
 #include "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
 #include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
-
+namespace MatchState
+{
+    const FName Cooldown = FName("Cooldown");
+}
 ABlasterGameMode::ABlasterGameMode()
 {
     bDelayedStart = true;
@@ -26,6 +30,22 @@ void ABlasterGameMode::Tick(float DeltaSeconds)
         if(CountDownTime <= 0.f)
         {
             StartMatch();
+        }
+    }
+    else if(MatchState == MatchState::InProgress)
+    {
+        CountDownTime = WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+        if(CountDownTime <= 0.f)
+        {
+            SetMatchState(MatchState::Cooldown);
+        }
+    }
+    else if(MatchState == MatchState::Cooldown)
+    {
+        CooldownTime = CooldownTime + WarmupTime+MatchTime-GetWorld()->GetTimeSeconds()+LevelStartingTime;
+        if(CountDownTime <= 0.f)
+        {
+            RestartGame();
         }
     }
 }
@@ -48,10 +68,11 @@ void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* ElimedCharacter, ABla
 
     ABlasterPlayerState* AttackerPlayerState = AttackerController ? Cast<ABlasterPlayerState>(AttackerController->PlayerState) : nullptr;
     ABlasterPlayerState* VictimPlayerState = VictimController ? Cast<ABlasterPlayerState>(VictimController->PlayerState) : nullptr;
-	
-    if(AttackerPlayerState && AttackerPlayerState != VictimPlayerState)
+	ABlasterGameState* BlasterGameState = GetGameState<ABlasterGameState>();
+    if(AttackerPlayerState && AttackerPlayerState != VictimPlayerState && BlasterGameState)
     {
         AttackerPlayerState->AddToScore(1.f);
+        BlasterGameState->UpdateTopScore(AttackerPlayerState);
     }
     if(VictimPlayerState)
     {
