@@ -3,8 +3,6 @@
 
 #include "Projectile.h"
 #include "Components/BoxComponent.h"
-#include "FPSMultiplayer/Character/BlasterCharacter.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include  "Sound/SoundCue.h"
 #include  "FPSMultiplayer/FPSMultiplayer.h"
@@ -24,8 +22,6 @@ AProjectile::AProjectile()
 	CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECR_Block);
 
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
 // Called when the game starts or when spawned
 void AProjectile::BeginPlay()
@@ -45,6 +41,7 @@ void AProjectile::BeginPlay()
 	if(HasAuthority())
 	{
 		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+		//CollisionBox->IgnoreActorWhenMoving(Owner, this);
 	}
 }
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

@@ -39,6 +39,7 @@ public:
 	void AddAmmo(int32 AmmoAmt);
 	UPROPERTY(EditAnywhere)
 	class USoundCue* EquipSound;
+	void EnableCustomDepth(bool bEnabled);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

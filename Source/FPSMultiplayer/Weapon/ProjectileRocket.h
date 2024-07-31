@@ -17,7 +17,8 @@ public:
 	AProjectileRocket();
 protected:
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
-
+	UPROPERTY(VisibleAnywhere)
+	class URocketMovementComponent* RocketMovementComponent;
 private:
 	UPROPERTY(EditAnywhere, Category=Projectile)
 	float MinDamage = 2.f;

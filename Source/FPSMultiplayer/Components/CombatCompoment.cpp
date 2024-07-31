@@ -237,6 +237,20 @@ void UCombatCompoment::FireButtonPressed(bool bPressed)
 		Fire();
 	}
 }
+
+void UCombatCompoment::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
+{
+	if (CarryAmmoMap.Contains(WeaponType))
+	{
+		CarryAmmoMap[WeaponType] = FMath::Clamp(CarryAmmoMap[WeaponType] + AmmoAmount, 0, MaxCarriedAmmo);
+		UpdateAmmoValues();
+	}
+	if (EquippedWeapon && EquippedWeapon->IsEmpty() && EquippedWeapon->GetWeaponType() == WeaponType)
+	{
+		Reload();
+	}
+}
+
 void UCombatCompoment::Fire()
 {
 	if(EquippedWeapon && CanFire())
@@ -442,4 +456,5 @@ void UCombatCompoment::InitializeCarryAmmo()
 {
 	CarryAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingAmmo);
 	CarryAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingRocketAmmo);
+	CarryAmmoMap.Emplace(EWeaponType::EWT_Pistol, StartingPistolAmmo);
 }
