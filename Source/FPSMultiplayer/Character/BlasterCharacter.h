@@ -37,6 +37,8 @@ public:
 	UPROPERTY(Replicated)
 	bool bDisplayGameplay = false;
 	virtual void Destroyed() override;
+	void UpdateHUDHealth();
+	void UpdateHUDShield();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,7 +59,6 @@ protected:
 	void FireButtonReleased();
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InsigatorController, AActor* DamageCauser);
-	void UpdateHUDHealth();
 	void PollInit();
 	void RotateInPlace(float DeltaSecond);
 private:
@@ -76,6 +77,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatCompoment* PlayerCombat;
+
+	UPROPERTY(VisibleAnywhere)
+	class UBuffComponent* Buff;
 
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
@@ -110,8 +114,16 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_health, VisibleAnywhere, Category="Player Stats")
 	float Health = 100.f;
 	UFUNCTION()
-	void OnRep_Health();
+	void OnRep_Health(float LastHealth);
 
+	UPROPERTY(EditAnywhere, Category="Player Stats")
+	float MaxShield = 100.f;
+	UPROPERTY(ReplicatedUsing=OnRep_Shield, VisibleAnywhere, Category="Player Stats")
+	float Shield = 100.f;
+	UFUNCTION()
+	void OnRep_Shield(float LastShield);
+
+	UPROPERTY()
 	class ABlasterPlayerController* BlasterPlayerController;
 	bool bIsElim = false;
 	
@@ -150,8 +162,10 @@ public:
 	FORCEINLINE bool ShouldRotateRootBone(){return  bRotateRootBone;}
 	FORCEINLINE bool IsElimmed(){return  bIsElim;}
 	FORCEINLINE float GetHealth(){return  Health;}
+	FORCEINLINE void SetHealth(float Amount) {Health = Amount;}
 	FORCEINLINE float GetMaxHealth(){return  MaxHealth;}
 	ECombatType GetCombatState() const;
 	FORCEINLINE UCombatCompoment* GetCombat() const {return  PlayerCombat;}
 	FORCEINLINE bool GetDisableGameplay() const {return  bDisplayGameplay;}
+	FORCEINLINE UBuffComponent* GetBuff() const {return  Buff;}
 };

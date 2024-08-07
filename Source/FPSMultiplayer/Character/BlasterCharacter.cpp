@@ -9,6 +9,7 @@
 #include "Components/WidgetComponent.h"
 #include "FPSMultiplayer/FPSMultiplayer.h"
 #include "FPSMultiplayer/Components/CombatCompoment.h"
+#include "FPSMultiplayer/Components/BuffComponent.h"
 #include "FPSMultiplayer/GameMode/BlasterGameMode.h"
 #include "Net/UnrealNetwork.h"
 #include "FPSMultiplayer/Weapon/Weapon.h"
@@ -41,6 +42,9 @@ ABlasterCharacter::ABlasterCharacter()
 	PlayerCombat = CreateDefaultSubobject<UCombatCompoment>(TEXT("CombatComponent"));
 	PlayerCombat->SetIsReplicated(true);
 
+	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	Buff->SetIsReplicated(true);
+	
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
@@ -65,6 +69,7 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(ABlasterCharacter, Health);
+	DOREPLIFETIME(ABlasterCharacter, Shield);
 	DOREPLIFETIME(ABlasterCharacter, bDisplayGameplay);
 }
 
@@ -83,6 +88,7 @@ void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	UpdateHUDHealth();
+	UpdateHUDShield();
 	if(HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);
@@ -157,6 +163,14 @@ void ABlasterCharacter::PostInitializeComponents()
 	if(PlayerCombat)
 	{
 		PlayerCombat->Character = this;
+	}
+	if(Buff)
+	{
+		Buff->Character = this;
+		Buff->SetInitialSpeed(
+			GetCharacterMovement()->MaxWalkSpeed,
+			GetCharacterMovement()->MaxWalkSpeedCrouched
+		);
 	}
 }
 void ABlasterCharacter::MoveForward(float Value)
@@ -501,8 +515,26 @@ void ABlasterCharacter::HideMeshIfCharacterClip()
 }
 void ABlasterCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, AController* InsigatorController, AActor* DamageCauser)
 {
-	Health = FMath::Clamp(Health-Damage, 0.f, MaxHealth);
+	if(bIsElim) return;
+	float DamageToHealth = Damage;
+	if(Shield > 0.f)
+	{
+		if(Shield >= Damage)
+		{
+			Shield = FMath::Clamp(Shield - Damage, 0.f, MaxShield);
+			DamageToHealth = 0.f;
+		}
+		else
+		{
+			Shield = 0.f;
+			DamageToHealth = FMath::Clamp(DamageToHealth - Shield, 0.f, Damage);
+		}
+	}
+
+	
+	Health = FMath::Clamp(Health-DamageToHealth, 0.f, MaxHealth);
 	UpdateHUDHealth();
+	UpdateHUDShield();
 	PlayHitMontage();
 	UE_LOG(LogTemp, Warning, TEXT("Health Remain: %f"), Health);
 	if(Health == 0.f)
@@ -517,11 +549,24 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const U
 	}
 }
 
-void ABlasterCharacter::OnRep_Health()
+void ABlasterCharacter::OnRep_Health(float LastHealth)
 {
 	UpdateHUDHealth();
-	PlayHitMontage();
+	if(Health < LastHealth)
+	{
+		PlayHitMontage();
+	}
 }
+
+void ABlasterCharacter::OnRep_Shield(float LastShield)
+{
+	UpdateHUDShield();
+	if(Shield<LastShield)
+	{
+		PlayHitMontage();
+	}
+}
+
 void ABlasterCharacter::UpdateHUDHealth()
 {
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
@@ -530,6 +575,16 @@ void ABlasterCharacter::UpdateHUDHealth()
 		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
 	}
 }
+
+void ABlasterCharacter::UpdateHUDShield()
+{
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+	if(BlasterPlayerController)
+	{
+		BlasterPlayerController->SetHUDShield(Shield, MaxShield);
+	}
+}
+
 void ABlasterCharacter::Eliminate()
 {
 	if(PlayerCombat && PlayerCombat->EquippedWeapon)

@@ -15,6 +15,7 @@ class FPSMULTIPLAYER_API ABlasterPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	void SetHUDHealth(float Health, float MaxHealth);
+	void SetHUDShield(float Shield, float MaxShield);
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Value);
 	void SetHUDWeaponAmmo(int32 Value);
@@ -65,10 +66,17 @@ private:
 	void OnRep_MatchState();
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
-	bool bInitializeCharacterOverlay = false;
+	
 	float HUDHealth;
 	float HUDMaxHealth;
+	bool bInitializeHealth = false;
 	float HUDScore;
+	bool bInitializeScore = false;
+	float HUDShield;
+	bool bInitializeShield = false;
+	float HUDMaxShield;
+	
 	int32 HUDDefeats;
+	bool bInitializeDefeat = false;
 	
 };

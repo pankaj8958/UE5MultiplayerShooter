@@ -5,6 +5,8 @@
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "FPSMultiplayer/Weapon/WeaponTypes.h"
 // Sets default values
 APickUp::APickUp()
@@ -27,6 +29,10 @@ APickUp::APickUp()
 	PickupMesh->SetRelativeScale3D(FVector(5.f, 5.f, 5.f));
 	PickupMesh->SetRenderCustomDepth(true);
 	PickupMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+	
+	PickupEffectComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PickupEffectComponent"));
+	PickupEffectComp->SetupAttachment(RootComponent);
+	
 }
 
 // Called when the game starts or when spawned
@@ -64,6 +70,15 @@ void APickUp::Destroyed()
 			PickupSound,
 			GetActorLocation()
 			);
+	}
+	if(PickupEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			this,
+			PickupEffect,
+			GetActorLocation(),
+			GetActorRotation()
+		);
 	}
 }
 

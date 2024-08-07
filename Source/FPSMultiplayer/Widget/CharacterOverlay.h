@@ -19,10 +19,17 @@ public:
 	class UProgressBar* HealthBar;
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* HealthText;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UProgressBar* ShieldBar;
+	UPROPERTY(meta=(BindWidget))
+	class UTextBlock* ShieldText;
+	
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* ScoreAmt;
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* DefeatsAmt;
+	
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* WeaponAmmoAmt;
 	UPROPERTY(meta=(BindWidget))
