@@ -33,7 +33,7 @@ public:
 	void Eliminate();
 	UFUNCTION(NetMultiCast, Reliable)
 	void MulticastEliminate();
-
+	
 	UPROPERTY(Replicated)
 	bool bDisplayGameplay = false;
 	virtual void Destroyed() override;
@@ -164,6 +164,8 @@ public:
 	FORCEINLINE float GetHealth(){return  Health;}
 	FORCEINLINE void SetHealth(float Amount) {Health = Amount;}
 	FORCEINLINE float GetMaxHealth(){return  MaxHealth;}
+	FORCEINLINE float GetShild(){return  Shield;}
+	FORCEINLINE float GetMaxShield(){return MaxShield;}
 	ECombatType GetCombatState() const;
 	FORCEINLINE UCombatCompoment* GetCombat() const {return  PlayerCombat;}
 	FORCEINLINE bool GetDisableGameplay() const {return  bDisplayGameplay;}

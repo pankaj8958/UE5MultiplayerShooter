@@ -107,6 +107,7 @@ void ABlasterPlayerController::OnPossess(APawn *InPawn)
 	if(BlasterCharacter)
 	{
 		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
+		SetHUDShield(BlasterCharacter->GetShild(), BlasterCharacter->GetMaxShield());
 	}
 }
 
