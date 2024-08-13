@@ -87,6 +87,8 @@ void ABlasterCharacter::Destroyed()
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	SpawnDefaultWeapon();
+	UpdateHUDAmmo();
 	UpdateHUDHealth();
 	UpdateHUDShield();
 	if(HasAuthority())
@@ -207,14 +209,7 @@ void ABlasterCharacter::EquippeButtonP̦ressed()
 	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
-		if(HasAuthority())
-		{
-			PlayerCombat->EquipWeapon(OverlappingWeapon);
-		}
-		else
-		{
-			ServerEquipButtonPressed();	
-		}
+		ServerEquipButtonPressed();
 	}
 }
 void ABlasterCharacter::CrouchButtonPressed()
@@ -256,7 +251,14 @@ void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 {
 	if(PlayerCombat)
 	{
-		PlayerCombat->EquipWeapon(OverlappingWeapon);
+		if(OverlappingWeapon)
+		{
+			PlayerCombat->EquipWeapon(OverlappingWeapon);
+		}
+		else if(PlayerCombat->ShouldSwapWeapons())
+		{
+			PlayerCombat->SwapWeapons();
+		}
 	}
 }
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
@@ -426,6 +428,35 @@ void ABlasterCharacter::FireButtonReleased()
 		PlayerCombat->FireButtonPressed(false);
 	}
 }
+
+void ABlasterCharacter::DropOrDestroyWeapon(AWeapon* Weapon)
+{
+	if(Weapon == nullptr) return;
+	if(Weapon->bDestroyWeapon)
+	{
+		Weapon->Destroy();
+	}
+	else
+	{
+		Weapon->Dropped();
+	}
+}
+
+void ABlasterCharacter::DropOrDestroyWeapons()
+{
+	if(PlayerCombat)
+	{
+		if(PlayerCombat->EquippedWeapon)
+		{
+			DropOrDestroyWeapon(PlayerCombat->EquippedWeapon);
+		}
+		if(PlayerCombat->SecondaryWeapon)
+		{
+			DropOrDestroyWeapon(PlayerCombat->SecondaryWeapon);
+		}
+	}
+}
+
 void ABlasterCharacter::PlayFireMontage(bool bAiming)
 {
 	if(PlayerCombat == nullptr || PlayerCombat->EquippedWeapon == nullptr)
@@ -586,10 +617,7 @@ void ABlasterCharacter::UpdateHUDShield()
 
 void ABlasterCharacter::Eliminate()
 {
-	if(PlayerCombat && PlayerCombat->EquippedWeapon)
-	{
-		PlayerCombat->EquippedWeapon->Dropped();
-	}
+	DropOrDestroyWeapons();
 	MulticastEliminate();
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
@@ -658,7 +686,29 @@ ECombatType ABlasterCharacter::GetCombatState() const
     if (PlayerCombat == nullptr) return ECombatType::ECS_MAX;
 	return PlayerCombat->CombatState;
 }
-
+void ABlasterCharacter::UpdateHUDAmmo()
+{
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+	if (BlasterPlayerController && PlayerCombat && PlayerCombat->EquippedWeapon)
+	{
+		BlasterPlayerController->SetHUDCarryAmmo(PlayerCombat->CarryAmmo);
+		BlasterPlayerController->SetHUDWeaponAmmo(PlayerCombat->EquippedWeapon->GetAmmo());
+	}
+}
+void ABlasterCharacter::SpawnDefaultWeapon()
+{
+	ABlasterGameMode* BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+	UWorld* World = GetWorld();
+	if (BlasterGameMode && World && !bIsElim && DefaultWeaponClass)
+	{
+		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
+		StartingWeapon->bDestroyWeapon = true;
+		if (PlayerCombat)
+		{
+			PlayerCombat->EquipWeapon(StartingWeapon);
+		}
+	}
+}
 
 
 

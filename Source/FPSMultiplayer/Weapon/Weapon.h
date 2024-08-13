@@ -12,7 +12,7 @@ enum class EWeaponState : uint8
 	EWS_Initial UMETA(DisplayName = "InitialState"),
 	EWS_Equipped UMETA(DisplayName = "Equipped"),
 	EWS_Dropped UMETA(DisplayName = "Dropped"),
-
+	EWS_EquippedSecondary UMETA(DisplayName = "Equipped Secondary"),
 	EWS_Max UMETA(DisplayName = "DefaultMax")
 };
 
@@ -40,7 +40,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USoundCue* EquipSound;
 	void EnableCustomDepth(bool bEnabled);
+	bool bDestroyWeapon = false;
 protected:
+	virtual void OnWeaponStateSet();
+	virtual void OnEquipped();
+	virtual void OnDropped();
+	virtual void OnEquippedSecondary();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	UFUNCTION()

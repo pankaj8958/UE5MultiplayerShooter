@@ -8,6 +8,7 @@
 #include "FPSMultiplayer/Interface/InteractWithCrosshairInterface.h"
 #include "Components/TimelineComponent.h"
 #include "FPSMultiplayer/BlasterType/CombatState.h"
+#include "FPSMultiplayer/Weapon/Weapon.h"
 #include "BlasterCharacter.generated.h"
 
 UCLASS()
@@ -39,6 +40,8 @@ public:
 	virtual void Destroyed() override;
 	void UpdateHUDHealth();
 	void UpdateHUDShield();
+	void UpdateHUDAmmo();
+	void SpawnDefaultWeapon();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,6 +60,8 @@ protected:
 	virtual void Jump() override;
 	void FireButtonPressed();
 	void FireButtonReleased();
+	void DropOrDestroyWeapon(AWeapon* Weapon);
+	void DropOrDestroyWeapons();
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InsigatorController, AActor* DamageCauser);
 	void PollInit();
@@ -149,6 +154,8 @@ private:
 	UMaterialInstance* DissolveMaterialInstance;
 	UPROPERTY()
 	class ABlasterPlayerState* BlasterPlayerState;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> DefaultWeaponClass;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();

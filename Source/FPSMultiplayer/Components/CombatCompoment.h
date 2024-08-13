@@ -29,6 +29,7 @@ public:
 	void FinishReloading();
 	void FireButtonPressed(bool bPressed);
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
+	bool ShouldSwapWeapons();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -51,12 +52,17 @@ protected:
 	void ServerReload();
 	void HandleReload();
 	int32 AmountToReload();
+	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
+	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
+	void AttachActorToBackpack(AActor* ActorToAttach);
 private:
 	class ABlasterCharacter* Character;
 	class ABlasterPlayerController* PlayerController;
-	class ABlasterHUD* HUD;
+	ABlasterHUD* HUD;
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	class AWeapon* EquippedWeapon;
+	AWeapon* EquippedWeapon;
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	AWeapon* SecondaryWeapon;
 	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
 	bool bAiming;
 	UFUNCTION()
@@ -86,7 +92,8 @@ private:
 	void FireTimerStart();
 	void FireTimerFinished();
 	void Fire();
-
+	UFUNCTION()
+	void OnRep_SecondaryWeapon();
 	bool CanFire();
 	UPROPERTY(ReplicatedUsing = OnRep_CarryAmmo)
 	int32 CarryAmmo;
@@ -104,15 +111,11 @@ private:
 
 	UPROPERTY(EditAnywhere)	
 	int32 StartingPistolAmmo = 30;
-	
-	
 	void InitializeCarryAmmo();
-
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
 	ECombatType CombatState = ECombatType::ECS_Unoccupied;
-
 	UFUNCTION()
 	void OnRep_CombatState();
-
 	void UpdateAmmoValues();
+	void SwapWeapons();
 };
