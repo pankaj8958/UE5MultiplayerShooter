@@ -44,12 +44,13 @@ protected:
 	float TimeSyncRunningTime = 0.f;
 	void CheckTimeSync(float DeltaTime);
 	void PollInit();
-
+	void CheckPing(float DeltaTime);
 	UFUNCTION(Server, Reliable)
 	void ServerCheckMatchState();
 	UFUNCTION(Client, Reliable)
 	void ClientJoinMidgame(FName StateofMatch, float Warmup, float Match, float StatingTime, float Cooltime);
-	
+	void HighPingWarning();
+	void StopHighPingWarning();
 private:
 	UPROPERTY()
 	class ABlasterHUD* BlasterHUD;
@@ -83,5 +84,13 @@ private:
 	bool bInitializeCarriedAmmo = false;
 	float HUDWeaponAmmo;
 	bool bInitializeWeaponAmmo = false;
-	
+
+	float HighPingRunningTime = 0.f;
+	UPROPERTY(EditAnywhere)
+	float HighPingDuration = 5.f;
+	UPROPERTY(EditAnywhere)
+	float CheckPingFrequency = 20.f;
+	UPROPERTY(EditAnywhere)
+	float HighPingThreshold = 50.f;
+	float PingAnimationRunningTime = 0.f;
 };
