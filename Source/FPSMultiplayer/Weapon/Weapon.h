@@ -83,12 +83,15 @@ private:
 	class UAnimationAsset* FireAnimation;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ACasing> CasingClass;
-
-	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	int32 Sequence = 0;//Number of unprocess server request send for ammo
+	UPROPERTY(EditAnywhere)
 	int32 Ammo;
 
-	UFUNCTION()
-	void OnRep_Ammo();
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAmmo(int32 ServerAmmo);
+	UFUNCTION(Client, Reliable)
+	void ClientAddAmmo(int32 AmmoAmt);
+	
 	void SpendRound();
 
 	UPROPERTY(EditAnywhere)

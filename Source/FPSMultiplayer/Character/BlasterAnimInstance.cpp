@@ -71,6 +71,10 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
         }
     }
     bUseFabrik = BlasterCharacter->GetCombatState() != ECombatType::ECS_Reloading;
+    if(BlasterCharacter->IsLocallyControlled() && BlasterCharacter->GetCombatState() != ECombatType::ECS_Granade)
+    {
+        bUseFabrik = !BlasterCharacter->IsLocallyReloading();
+    }
     bUseAimOffsets = BlasterCharacter->GetCombatState() != ECombatType::ECS_Reloading && !BlasterCharacter->GetDisableGameplay();
     bTransformRightHand = BlasterCharacter->GetCombatState() != ECombatType::ECS_Reloading && !BlasterCharacter->GetDisableGameplay();
 }

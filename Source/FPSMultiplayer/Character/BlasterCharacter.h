@@ -177,4 +177,5 @@ public:
 	FORCEINLINE UCombatCompoment* GetCombat() const {return  PlayerCombat;}
 	FORCEINLINE bool GetDisableGameplay() const {return  bDisplayGameplay;}
 	FORCEINLINE UBuffComponent* GetBuff() const {return  Buff;}
+	bool IsLocallyReloading();
 };

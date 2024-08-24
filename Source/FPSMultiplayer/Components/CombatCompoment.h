@@ -30,6 +30,7 @@ public:
 	void FireButtonPressed(bool bPressed);
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 	bool ShouldSwapWeapons();
+	bool bLocallyReloading = false;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -71,7 +72,7 @@ private:
 	float BaseWalkSpeed;
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed;
-
+	bool bAimButtonPressed = false;
 	bool bFireButtonPressed;
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
@@ -92,6 +93,7 @@ private:
 	void FireTimerStart();
 	void FireTimerFinished();
 	void Fire();
+	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
 	UFUNCTION()
 	void OnRep_SecondaryWeapon();
 	bool CanFire();

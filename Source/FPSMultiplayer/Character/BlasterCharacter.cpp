@@ -686,6 +686,13 @@ ECombatType ABlasterCharacter::GetCombatState() const
     if (PlayerCombat == nullptr) return ECombatType::ECS_MAX;
 	return PlayerCombat->CombatState;
 }
+
+bool ABlasterCharacter::IsLocallyReloading()
+{
+	if(PlayerCombat == nullptr) return  false;
+	return  PlayerCombat->bLocallyReloading;
+}
+
 void ABlasterCharacter::UpdateHUDAmmo()
 {
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
