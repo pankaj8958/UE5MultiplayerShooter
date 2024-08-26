@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-#include "GameFramework/PlayerState.h"
 #include "BlasterPlayerController.h"
+#include "GameFramework/PlayerState.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
