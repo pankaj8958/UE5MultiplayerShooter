@@ -64,6 +64,14 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 	);
+	UPROPERTY(EditAnywhere)
+	float Damage = 20.f;
+	UPROPERTY(EditAnywhere)
+	bool bUserServerSideRewind = false;
+	UPROPERTY()
+	class ABlasterCharacter* BlasterOwnerCharacter;
+	UPROPERTY()
+	class ABlasterPlayerController* BlasterOwnerController;
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class USkeletalMeshComponent* WeaponMesh;
@@ -96,11 +104,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int32 MagCapacity;
-
-	UPROPERTY()
-	class ABlasterCharacter* BlasterOwnerCharacter;
-	UPROPERTY()
-	class ABlasterPlayerController* BlasterOwnerController;
 	//FOV / Zoom
 	UPROPERTY(EditAnywhere)
 	float ZoomFov = 30.f;
@@ -135,5 +138,5 @@ public:
 	FORCEINLINE EWeaponType GetWeaponType() const {return WeaponType;}
 	FORCEINLINE int32 GetAmmo() const {return  Ammo;}
 	FORCEINLINE int32 GetMagCapacity() const {return  MagCapacity;}
-	 
+	FORCEINLINE float GetDamage() const {return  Damage;}
 };

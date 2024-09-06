@@ -30,6 +30,7 @@ public:
 	void HandleMatchHasStarted();
 	void HandleCooldown();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	float SingleTripTime = 0.f;
 protected:
 	virtual void BeginPlay() override;
 	void SetHUDTime();

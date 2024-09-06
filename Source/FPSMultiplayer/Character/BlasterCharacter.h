@@ -220,4 +220,5 @@ public:
 	FORCEINLINE bool GetDisableGameplay() const {return  bDisplayGameplay;}
 	FORCEINLINE UBuffComponent* GetBuff() const {return  Buff;}
 	bool IsLocallyReloading();
+	FORCEINLINE ULagCompensationComponent* GetLagCompensation() const{return  LagCompensation;}
 };
