@@ -17,7 +17,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 	AController* InstigatorController = OwnerPawn->GetController();
 	
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
-	if(MuzzleFlashSocket && InstigatorController)
+	if(MuzzleFlashSocket && InstigatorController && OwnerPawn->IsLocallyControlled())
 	{
 		FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
 		FVector Start = SocketTransform.GetLocation();
@@ -38,7 +38,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 				ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(FireHit.GetActor());
 				if(BlasterCharacter)
 				{
-					if(HasAuthority() && !bUserServerSideRewind)
+					if(HasAuthority())
 					{
 						UGameplayStatics::ApplyDamage(BlasterCharacter,Damage,
 						InstigatorController,this, UDamageType::StaticClass());

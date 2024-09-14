@@ -14,6 +14,13 @@ class FPSMULTIPLAYER_API AProjectile : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AProjectile();
+
+	bool bUseServerSideRewind = false;
+	FVector_NetQuantize TraceStart;
+	FVector_NetQuantize100 InitialVelocity;
+
+	UPROPERTY(EditAnywhere)
+	float InitialSpeed = 15000;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

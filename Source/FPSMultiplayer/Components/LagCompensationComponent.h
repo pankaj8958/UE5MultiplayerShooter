@@ -28,6 +28,8 @@ struct FFramePackage
 	float time;
 	UPROPERTY()
 	TMap<FName, FBoxInfo> HitBoxInfo;
+	UPROPERTY()
+	ABlasterCharacter* Character;
 };
 
 USTRUCT(BlueprintType)
@@ -56,6 +58,12 @@ public:
 		const FVector_NetQuantize& HitLocation,
 		float HitTime
 		);
+	FServerSideRewindResult ProjectileServerSideRewind(
+		ABlasterCharacter* HitCharacter,
+		const FVector_NetQuantize& TraceStart,
+		const FVector_NetQuantize100& InitialVelocity,
+		float HitTime
+	);
 	UFUNCTION(Server, Reliable)
 	void ServerScoreRequest(
 		ABlasterCharacter* HitCharacter,
@@ -64,6 +72,12 @@ public:
 		float HitTime,
 		class AWeapon* DamageCauser
 	);
+	UFUNCTION(Server, Reliable)
+	void ProjectileServerScoreResult(
+		ABlasterCharacter* HitCharacter,
+		const FVector_NetQuantize& TraceStart,
+		const FVector_NetQuantize100& InitialVelocity,
+		float HitTime);
 protected:
 	virtual void BeginPlay() override;
 	void SaveFramePackage(FFramePackage& Package);
@@ -74,11 +88,19 @@ protected:
 		const FVector_NetQuantize& TraceStart,
 		const FVector_NetQuantize& HitLocation
 	);
+	FServerSideRewindResult ProjectileConfirmHit(
+		const FFramePackage Package,
+		ABlasterCharacter* HitCharacter,
+		const FVector_NetQuantize& TraceStart,
+		const FVector_NetQuantize100& InitialVelocity,
+		float HitTime
+	);
 	void CacheBoxPosition(ABlasterCharacter* HitCharacter, FFramePackage& OutFramePackage);
 	void MoveBoxes(ABlasterCharacter* HitCharacter, const FFramePackage& Package);
 	void ResetHitBoxes(ABlasterCharacter* HitCharacter, const FFramePackage& Package);
 	void EnableCharacterMeshCollision(ABlasterCharacter* HitCharacter, ECollisionEnabled::Type CollisionEnabled);
 	void SaveFramePackage();
+	FFramePackage GetFrameToCheck(ABlasterCharacter* HitCharacter, float HitTime);
 private:
 	UPROPERTY()
 	class ABlasterCharacter* Character;
