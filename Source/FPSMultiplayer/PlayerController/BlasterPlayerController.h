@@ -6,9 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "BlasterPlayerController.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
+
 UCLASS()
 class FPSMULTIPLAYER_API ABlasterPlayerController : public APlayerController
 {
@@ -31,6 +30,7 @@ public:
 	void HandleCooldown();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	float SingleTripTime = 0.f;
+	FHighPingDelegate HighPingDelegate;
 protected:
 	virtual void BeginPlay() override;
 	void SetHUDTime();
@@ -85,7 +85,8 @@ private:
 	bool bInitializeCarriedAmmo = false;
 	float HUDWeaponAmmo;
 	bool bInitializeWeaponAmmo = false;
-
+	UFUNCTION(Server, Reliable)
+	void ServerReportPingStatus(bool bHighPing);
 	float HighPingRunningTime = 0.f;
 	UPROPERTY(EditAnywhere)
 	float HighPingDuration = 5.f;

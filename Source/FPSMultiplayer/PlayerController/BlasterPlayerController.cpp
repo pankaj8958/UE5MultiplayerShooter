@@ -234,6 +234,7 @@ void ABlasterPlayerController::PollInit()
 }
 void ABlasterPlayerController::CheckPing(float DeltaTime)
 {
+	if(HasAuthority()) return;
 	HighPingRunningTime += DeltaTime;
 	if(HighPingRunningTime > CheckPingFrequency)
 	{
@@ -243,6 +244,10 @@ void ABlasterPlayerController::CheckPing(float DeltaTime)
 			{
 				HighPingWarning();
 				PingAnimationRunningTime = 0.f;
+				ServerReportPingStatus(true);
+			} else
+			{
+				ServerReportPingStatus(false);
 			}
 		}
 		HighPingRunningTime = 0.f;
@@ -360,6 +365,12 @@ void ABlasterPlayerController::OnRep_MatchState()
 		HandleCooldown();
 	}
 }
+
+void ABlasterPlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
+{
+	HighPingDelegate.Broadcast(bHighPing);
+}
+
 void ABlasterPlayerController::HandleMatchHasStarted()
 {
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;

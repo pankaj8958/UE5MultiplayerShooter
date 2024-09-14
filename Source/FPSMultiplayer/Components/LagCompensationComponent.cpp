@@ -127,7 +127,7 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 		}
 		ResetHitBoxes(HitCharacter, CurrentTime);
 		EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::Type::QueryAndPhysics);
-		return FServerSideRewindResult(true,false);
+		return FServerSideRewindResult{true,false};
 	}
 	else
 	{
@@ -154,12 +154,12 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 			}
 			ResetHitBoxes(HitCharacter, CurrentTime);
 			EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::Type::QueryAndPhysics);
-			return FServerSideRewindResult(true,false);
+			return FServerSideRewindResult{true,false};
 		}
 	}
 	ResetHitBoxes(HitCharacter, CurrentTime);
 	EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::Type::QueryAndPhysics);
-	return FServerSideRewindResult(false,false);
+	return FServerSideRewindResult{false,false};
 }
 
 void ULagCompensationComponent::CacheBoxPosition(ABlasterCharacter* HitCharacter, FFramePackage& OutFramePackage)
