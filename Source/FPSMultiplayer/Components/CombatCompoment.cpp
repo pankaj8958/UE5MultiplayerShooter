@@ -331,7 +331,7 @@ void UCombatCompoment::Fire()
 	if(EquippedWeapon && CanFire())
 	{
 		bCanFire = false;
-		ServerFire(HitTarget);
+		ServerFire(HitTarget, EquippedWeapon->FireDelay);
 		LocalFire(HitTarget);
 		if(EquippedWeapon)
 		{
@@ -341,10 +341,21 @@ void UCombatCompoment::Fire()
 	}
 }
 
-void UCombatCompoment::ServerFire_Implementation(const FVector_NetQuantize &TraceHitTarget)
+void UCombatCompoment::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget, float FireDelay)
 {
 	MultiCastFire(TraceHitTarget);
 }
+
+bool UCombatCompoment::ServerFire_Validate(const FVector_NetQuantize& TraceHitTarget, float FireDelay)
+{
+	if(EquippedWeapon)
+	{
+		bool bNearEqual = FMath::IsNearlyEqual(EquippedWeapon->FireDelay, FireDelay, 0.001f);
+		return bNearEqual;
+	}
+	return true;
+}
+
 void UCombatCompoment::MultiCastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	if(Character && Character->IsLocallyControlled() && !Character->HasAuthority()) return;
@@ -522,6 +533,7 @@ void UCombatCompoment::FireTimerFinished()
 bool UCombatCompoment::CanFire()
 {
 	if(EquippedWeapon == nullptr || bLocallyReloading)
+		return false;
 		return false;
 	return !EquippedWeapon->IsEmpty() || !bCanFire && CombatState == ECombatType::ECS_Unoccupied;
 }

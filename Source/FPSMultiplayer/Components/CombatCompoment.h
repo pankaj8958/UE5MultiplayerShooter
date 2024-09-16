@@ -42,8 +42,8 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 	
-	UFUNCTION(Server, Reliable)
-	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire(const FVector_NetQuantize& TraceHitTarget, float FireDelay);
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastFire(const FVector_NetQuantize& TraceHitTarget);
 
