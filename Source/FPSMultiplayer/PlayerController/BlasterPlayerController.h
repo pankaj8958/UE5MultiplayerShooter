@@ -34,7 +34,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void SetHUDTime();
-
+	virtual void SetupInputComponent() override;
 	UFUNCTION(Server, Reliable)
 	void ServerRequestServerTime(float TimeOfClientRequest);
 	UFUNCTION(Client, Reliable)
@@ -52,9 +52,15 @@ protected:
 	void ClientJoinMidgame(FName StateofMatch, float Warmup, float Match, float StatingTime, float Cooltime);
 	void HighPingWarning();
 	void StopHighPingWarning();
+	void ShowReturnToMenu();
 private:
 	UPROPERTY()
 	class ABlasterHUD* BlasterHUD;
+	UPROPERTY(EditAnywhere, Category=HUD)
+	TSubclassOf<class UUserWidget> ReturnMainmenuWidget;
+	UPROPERTY()
+	class UReturnToMainMenu* ReturnToMenu;
+	bool bReturnToMainMenu = false;
 	UPROPERTY()
 	class ABlasterGameMode* BlasterGameMode;
 	float MatchTime = 0.f;

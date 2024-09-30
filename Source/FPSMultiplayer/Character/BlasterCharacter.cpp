@@ -155,6 +155,16 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &Ou
 	DOREPLIFETIME(ABlasterCharacter, bDisplayGameplay);
 }
 
+void ABlasterCharacter::ServerLeaveGame_Implementation()
+{
+	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
+	if(BlasterGameMode && BlasterPlayerState)
+	{
+		BlasterGameMode->PlayerLeftGame(BlasterPlayerState);
+	}
+}
+
 void ABlasterCharacter::Destroyed()
 {
 	Super::Destroyed();
@@ -705,19 +715,14 @@ void ABlasterCharacter::UpdateHUDShield()
 	}
 }
 
-void ABlasterCharacter::Eliminate()
+void ABlasterCharacter::Eliminate(bool bIsPlayerleft)
 {
 	DropOrDestroyWeapons();
-	MulticastEliminate();
-	GetWorldTimerManager().SetTimer(
-		ElimTimer,
-		this,
-		&ABlasterCharacter::ElimTimerFinished,
-		ElimDelay
-	);
+	MulticastEliminate(bIsPlayerleft);
 }
-void ABlasterCharacter::MulticastEliminate_Implementation()
+void ABlasterCharacter::MulticastEliminate_Implementation(bool bIsPlayerleft)
 {
+	bLeftGame = bIsPlayerleft;
 	if(BlasterPlayerController)
 	{
 		BlasterPlayerController->SetHUDWeaponAmmo(0);
@@ -742,6 +747,12 @@ void ABlasterCharacter::MulticastEliminate_Implementation()
 	{
 		PlayerCombat->FireButtonPressed(false);
 	}
+	GetWorldTimerManager().SetTimer(
+	ElimTimer,
+	this,
+	&ABlasterCharacter::ElimTimerFinished,
+	ElimDelay
+	);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -749,7 +760,7 @@ void ABlasterCharacter::MulticastEliminate_Implementation()
 void ABlasterCharacter::ElimTimerFinished()
 {
 	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
-	if(BlasterGameMode)
+	if(BlasterGameMode && !bLeftGame)
 	{
 		BlasterGameMode->RequestRespawn(this, Controller);
 	}
@@ -759,6 +770,10 @@ void ABlasterCharacter::UpdateDissolveMaterial(float DissolveValue)
 	if(DynamicDissolveMaterial)
 	{
 		DynamicDissolveMaterial->SetScalarParameterValue(TEXT("Dissolve"), DissolveValue);
+	}
+	if(bLeftGame & IsLocallyControlled())
+	{
+		OnLeftGame.Broadcast();
 	}
 }
 

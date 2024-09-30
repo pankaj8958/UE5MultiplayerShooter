@@ -15,6 +15,7 @@
 #include "FPSMultiplayer/Components/CombatCompoment.h"
 #include "FPSMultiplayer/GameState/BlasterGameState.h"
 #include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
+#include "FPSMultiplayer/Widget/ReturnToMainMenu.h"
 
 void ABlasterPlayerController::BeginPlay()
 {
@@ -204,6 +205,13 @@ void ABlasterPlayerController::SetHUDTime()
 	CountdownInt = SecLeft;
 }
 
+void ABlasterPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	if(InputComponent == nullptr) return;
+	InputComponent->BindAction("Quit", IE_Pressed, this, &ABlasterPlayerController::ShowReturnToMenu);
+}
+
 void ABlasterPlayerController::CheckTimeSync(float DeltaTime)
 {
 	TimeSynchFreq += DeltaTime;
@@ -285,6 +293,28 @@ void ABlasterPlayerController::StopHighPingWarning()
 			BlasterHUD->CharacterOverlay->StopAnimation(BlasterHUD->CharacterOverlay->HighPingAnimation);
 	}
 }
+
+void ABlasterPlayerController::ShowReturnToMenu()
+{
+	if(ReturnMainmenuWidget == nullptr) return;
+	if(ReturnToMenu == nullptr)
+	{
+		ReturnToMenu = CreateWidget<UReturnToMainMenu>(this, ReturnMainmenuWidget);
+	}
+	if(ReturnToMenu)
+	{
+		bReturnToMainMenu = !bReturnToMainMenu;
+		if(bReturnToMainMenu)
+		{
+			ReturnToMenu->MenuSetup();
+		}
+		else
+		{
+			ReturnToMenu->MenuTearDown();
+		}
+	}
+}
+
 void ABlasterPlayerController::ClientJoinMidgame_Implementation(FName StateofMatch, float Warmup, float Match,
                                                                 float StatingTime, float Cooltime)
 {

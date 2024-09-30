@@ -11,7 +11,7 @@
 #include "FPSMultiplayer/BlasterType/CombatState.h"
 #include "FPSMultiplayer/Weapon/Weapon.h"
 #include "BlasterCharacter.generated.h"
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnleftGame);
 UCLASS()
 class FPSMULTIPLAYER_API ABlasterCharacter : public ACharacter, public  IInteractWithCrosshairInterface
 {
@@ -32,10 +32,13 @@ public:
 	void HideMeshIfCharacterClip();
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;
-	void Eliminate();
+	void Eliminate(bool bIsPlayerleft);
 	UFUNCTION(NetMultiCast, Reliable)
-	void MulticastEliminate();
-	
+	void MulticastEliminate(bool bIsPlayerleft);
+
+	UFUNCTION(Server, Reliable)
+	void ServerLeaveGame();
+	FOnleftGame OnLeftGame;
 	UPROPERTY(Replicated)
 	bool bDisplayGameplay = false;
 	virtual void Destroyed() override;
@@ -198,6 +201,7 @@ private:
 	class ABlasterPlayerState* BlasterPlayerState;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AWeapon> DefaultWeaponClass;
+	bool bLeftGame;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
