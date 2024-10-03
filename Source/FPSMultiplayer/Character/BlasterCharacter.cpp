@@ -2,6 +2,9 @@
 
 
 #include "BlasterCharacter.h"
+
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -720,6 +723,36 @@ void ABlasterCharacter::Eliminate(bool bIsPlayerleft)
 	DropOrDestroyWeapons();
 	MulticastEliminate(bIsPlayerleft);
 }
+
+void ABlasterCharacter::MulticastLostTheLead_Implementation()
+{
+	if(CrownComponent)
+	{
+		CrownComponent->DestroyComponent();
+	}
+}
+
+void ABlasterCharacter::MulticastGainedTheLead_Implementation()
+{
+	if(CrownSystem == nullptr) return;
+	if(CrownComponent == nullptr)
+	{
+		CrownComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			CrownSystem,
+			GetCapsuleComponent(),
+			FName(),
+			GetActorLocation() + FVector(0.f, 0.f, 110.f),
+			GetActorRotation(),
+			EAttachLocation::Type::KeepWorldPosition,
+			false
+		);
+	}
+	if(CrownComponent)
+	{
+		CrownComponent->Activate();
+	}
+}
+
 void ABlasterCharacter::MulticastEliminate_Implementation(bool bIsPlayerleft)
 {
 	bLeftGame = bIsPlayerleft;
@@ -746,6 +779,10 @@ void ABlasterCharacter::MulticastEliminate_Implementation(bool bIsPlayerleft)
 	if(PlayerCombat)
 	{
 		PlayerCombat->FireButtonPressed(false);
+	}
+	if(CrownComponent)
+	{
+		CrownComponent->DestroyComponent();
 	}
 	GetWorldTimerManager().SetTimer(
 	ElimTimer,

@@ -36,6 +36,11 @@ public:
 	UFUNCTION(NetMultiCast, Reliable)
 	void MulticastEliminate(bool bIsPlayerleft);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastGainedTheLead();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLostTheLead();
+	
 	UFUNCTION(Server, Reliable)
 	void ServerLeaveGame();
 	FOnleftGame OnLeftGame;
@@ -72,7 +77,7 @@ protected:
 	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InsigatorController, AActor* DamageCauser);
 	void PollInit();
 	void RotateInPlace(float DeltaSecond);
-
+	
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* head;
 	UPROPERTY(EditAnywhere)
@@ -202,6 +207,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AWeapon> DefaultWeaponClass;
 	bool bLeftGame;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* CrownSystem;
+	UPROPERTY()
+	class UNiagaraComponent* CrownComponent;
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
