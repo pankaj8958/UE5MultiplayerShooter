@@ -315,6 +315,42 @@ void ABlasterPlayerController::ShowReturnToMenu()
 	}
 }
 
+void ABlasterPlayerController::BroadcastElim(APlayerState* Attacker, APlayerState* Victim)
+{
+	ClientElimAnnouncement(Attacker, Victim);
+}
+void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)
+{
+	APlayerState* Self = GetPlayerState<APlayerState>();
+	if(Attacker && Victim && Self)
+	{
+		BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+		if(BlasterHUD)
+		{
+			if(Attacker == Self && Victim != Self)
+			{
+				BlasterHUD->ElimAnnouncent("You", Victim->GetPlayerName());
+				return;;
+			}
+			if(Victim == Self && Attacker != Self)
+			{
+				BlasterHUD->ElimAnnouncent( Attacker->GetPlayerName(), "You");
+				return;;
+			}
+			if(Victim == Attacker && Attacker == Self)
+			{
+				BlasterHUD->ElimAnnouncent( "You", "yourself");
+				return;;
+			}
+			if(Victim == Attacker && Attacker != Self)
+			{
+				BlasterHUD->ElimAnnouncent( Attacker->GetPlayerName(), "Themselve");
+				return;;
+			}
+			BlasterHUD->ElimAnnouncent( Attacker->GetPlayerName(), Victim->GetPlayerName());
+		}
+	}
+}
 void ABlasterPlayerController::ClientJoinMidgame_Implementation(FName StateofMatch, float Warmup, float Match,
                                                                 float StatingTime, float Cooltime)
 {

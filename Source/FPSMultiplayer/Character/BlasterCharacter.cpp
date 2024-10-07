@@ -22,6 +22,7 @@
 #include "FPSMultiplayer/Weapon/WeaponTypes.h"
 #include "TimerManager.h"
 #include "FPSMultiplayer/Components/LagCompensationComponent.h"
+#include "FPSMultiplayer/GameState/BlasterGameState.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -200,6 +201,12 @@ void ABlasterCharacter::PollInit()
 		{
 			BlasterPlayerState->AddToScore(0.f);
 			BlasterPlayerState->AddDefeats(0);
+
+			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
+			if(BlasterGameState)
+			{
+				MulticastGainedTheLead();
+			}
 		}
 	}
 }

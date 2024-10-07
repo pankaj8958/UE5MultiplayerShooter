@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ElimAnnouncement.h"
 #include "GameFramework/HUD.h"
 #include "BlasterHUD.generated.h"
 
@@ -37,13 +38,22 @@ public:
 	class UAnnouncement* Announcement;
 
 	void AddAnnouncement();
-	
+	void ElimAnnouncent(FString Attacker, FString Victim);
+	UPROPERTY(EditAnywhere)
+	float ElimAnnouncementTimer = 2.5f;
+	UFUNCTION()
+	void ElimAnnouncementTimerFinish(UElimAnnouncement* MsgToRemove);
+	UPROPERTY()
+	TArray<UElimAnnouncement*> ElimMessages;
 protected:
 	virtual void BeginPlay() override;
 	
 private:
+	class APlayerController* OwningPlayer;
 	FHUDPackage HUDPackage;
 	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCentre, FVector2D Spread, FLinearColor CrosshairColor);
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UElimAnnouncement> ElimAnnouncementClass;
 public:
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) {HUDPackage = Package;}
 	UPROPERTY(EditAnywhere)
