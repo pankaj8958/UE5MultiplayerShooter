@@ -644,11 +644,19 @@ void ABlasterCharacter::HideMeshIfCharacterClip()
 		{
 			PlayerCombat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
 		}
+		if(PlayerCombat && PlayerCombat->SecondaryWeapon && PlayerCombat->SecondaryWeapon->GetWeaponMesh())
+		{
+			PlayerCombat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+		}
 	}
 	else
 	{
 		GetMesh()->SetVisibility(true);
 		if(PlayerCombat && PlayerCombat->EquippedWeapon && PlayerCombat->EquippedWeapon->GetWeaponMesh())
+		{
+			PlayerCombat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
+		}
+		if(PlayerCombat && PlayerCombat->SecondaryWeapon && PlayerCombat->SecondaryWeapon->GetWeaponMesh())
 		{
 			PlayerCombat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
 		}
