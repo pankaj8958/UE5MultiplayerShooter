@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
 #include "GameFramework/PlayerController.h"
 #include "BlasterPlayerController.generated.h"
 
@@ -23,10 +24,14 @@ public:
 	void SetHUDAnnouncement(float CountdownTime);
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaSeconds) override;
+	void HideTeamScore();
+	void InitTeamScore();
+	void SetHudRedTeamScore(int32 RedTeamScore);
+	void SetHudBlueTeamScore(int32 BlueTeamScore);
 	virtual float GetServerTime();
 	virtual void ReceivedPlayer() override;
-	void OnMatchStateSet(FName State);
-	void HandleMatchHasStarted();
+	void OnMatchStateSet(FName State, bool bteamMatch = false);
+	void HandleMatchHasStarted(bool bteamMatch = false);
 	void HandleCooldown();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	float SingleTripTime = 0.f;
@@ -57,6 +62,12 @@ protected:
 	void ShowReturnToMenu();
 	UFUNCTION(Client, Reliable)
 	void ClientElimAnnouncement(APlayerState* Attacker, APlayerState* Victim);
+	UPROPERTY(ReplicatedUsing=OnRep_ShowTeamScore)
+	bool bShowteamScore = false;
+	UFUNCTION()
+	void OnRep_ShowTeamScore();
+	FString GetInfotext(const TArray<ABlasterPlayerState*>& Players);
+	FString GetTeamInfotext(class ABlasterGameState* BlasterGameSTate);
 private:
 	UPROPERTY()
 	class ABlasterHUD* BlasterHUD;

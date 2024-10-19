@@ -161,7 +161,7 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &Ou
 
 void ABlasterCharacter::ServerLeaveGame_Implementation()
 {
-	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
 	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
 	if(BlasterGameMode && BlasterPlayerState)
 	{
@@ -172,7 +172,7 @@ void ABlasterCharacter::ServerLeaveGame_Implementation()
 void ABlasterCharacter::Destroyed()
 {
 	Super::Destroyed();
-	ABlasterGameMode* BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+	BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
 	bool bMatchNotInProgress = BlasterGameMode && BlasterGameMode->GetMatchState() != MatchState::InProgress;
 	if(PlayerCombat && PlayerCombat->EquippedWeapon && bMatchNotInProgress)
 	{
@@ -201,6 +201,7 @@ void ABlasterCharacter::PollInit()
 		{
 			BlasterPlayerState->AddToScore(0.f);
 			BlasterPlayerState->AddDefeats(0);
+			SetTeamColor(BlasterPlayerState->GetTeam());
 
 			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 			if(BlasterGameState)
@@ -687,7 +688,7 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const U
 	UE_LOG(LogTemp, Warning, TEXT("Health Remain: %f"), Health);
 	if(Health == 0.f)
 	{
-		ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+		BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
 		if(BlasterGameMode)
 		{
 			BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
@@ -737,6 +738,26 @@ void ABlasterCharacter::Eliminate(bool bIsPlayerleft)
 {
 	DropOrDestroyWeapons();
 	MulticastEliminate(bIsPlayerleft);
+}
+
+void ABlasterCharacter::SetTeamColor(ETeam Team)
+{
+	if(GetMesh() == nullptr || OriginalMaterial == nullptr) return;
+	switch (Team)
+	{
+	case ETeam::ET_NoTeam:
+		GetMesh()->SetMaterial(0, OriginalMaterial);
+		DissolveMaterialInstance = BlueDissolveMatInst;
+		break;
+	case ETeam::ET_BlueTeam:
+		GetMesh()->SetMaterial(0, BlueMaterial);
+		DissolveMaterialInstance = BlueDissolveMatInst;
+		break;
+	case  ETeam::ET_RedTeam:
+		GetMesh()->SetMaterial(0, RedMaterial);
+		DissolveMaterialInstance = RedDissolveMatInst;
+		break;
+	}
 }
 
 void ABlasterCharacter::MulticastLostTheLead_Implementation()
@@ -811,7 +832,7 @@ void ABlasterCharacter::MulticastEliminate_Implementation(bool bIsPlayerleft)
 
 void ABlasterCharacter::ElimTimerFinished()
 {
-	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
 	if(BlasterGameMode && !bLeftGame)
 	{
 		BlasterGameMode->RequestRespawn(this, Controller);
@@ -861,7 +882,7 @@ void ABlasterCharacter::UpdateHUDAmmo()
 }
 void ABlasterCharacter::SpawnDefaultWeapon()
 {
-	ABlasterGameMode* BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+	BlasterGameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
 	UWorld* World = GetWorld();
 	if (BlasterGameMode && World && !bIsElim && DefaultWeaponClass)
 	{

@@ -20,6 +20,8 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void UpdateTopScore(ABlasterPlayerState* ScorePLayer);
 
+	void RedTeamScores();
+	void BlueTeamScores();
 	TArray<ABlasterPlayerState*> RedTeam;
 	TArray<ABlasterPlayerState*> BlueTeam;
 

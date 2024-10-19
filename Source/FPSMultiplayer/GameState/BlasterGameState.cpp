@@ -2,6 +2,8 @@
 
 
 #include "BlasterGameState.h"
+
+#include "FPSMultiplayer/PlayerController/BlasterPlayerController.h"
 #include "FPSMultiplayer/PlayerState/BlasterPlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -32,11 +34,40 @@ void ABlasterGameState::UpdateTopScore(ABlasterPlayerState* ScorePLayer)
 	}
 }
 
+void ABlasterGameState::RedTeamScores()
+{
+	++RedTeamScore;
+	ABlasterPlayerController* BPlayer = Cast<ABlasterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if(BPlayer)
+	{
+		BPlayer->SetHudRedTeamScore(RedTeamScore);
+	}
+}
+
+void ABlasterGameState::BlueTeamScores()
+{
+	++BlueTeamScore;
+	ABlasterPlayerController* BPlayer = Cast<ABlasterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if(BPlayer)
+	{
+		BPlayer->SetHudBlueTeamScore(BlueTeamScore);
+	}
+}
+
 void ABlasterGameState::OnRep_RedTeamScore()
 {
-	
+	ABlasterPlayerController* BPlayer = Cast<ABlasterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if(BPlayer)
+	{
+		BPlayer->SetHudRedTeamScore(RedTeamScore);
+	}
 }
 
 void ABlasterGameState::OnRep_BlueTeamScore()
 {
+	ABlasterPlayerController* BPlayer = Cast<ABlasterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if(BPlayer)
+	{
+		BPlayer->SetHudBlueTeamScore(BlueTeamScore);
+	}
 }

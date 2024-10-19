@@ -24,9 +24,11 @@ public:
 	float WarmupTime = 10.f;
 	UPROPERTY(EditDefaultsOnly)
 	float MatchTime = 120.f;
+	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage);
 	UPROPERTY(EditDefaultsOnly)
 	float CooldownTime = 10.f;
 	float LevelStartingTime;
+	bool bTeamsMatch = false;
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnMatchStateSet() override;
