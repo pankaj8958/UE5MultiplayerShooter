@@ -871,6 +871,12 @@ bool ABlasterCharacter::IsLocallyReloading()
 	return  PlayerCombat->bLocallyReloading;
 }
 
+bool ABlasterCharacter::IsHoldingTheFlag() const
+{
+	if(PlayerCombat == nullptr) return false;
+	return PlayerCombat->bHoldingTheFlag;
+}
+
 void ABlasterCharacter::UpdateHUDAmmo()
 {
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;

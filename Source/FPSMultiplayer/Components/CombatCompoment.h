@@ -120,4 +120,5 @@ private:
 	void OnRep_CombatState();
 	void UpdateAmmoValues();
 	void SwapWeapons();
+	bool bHoldingTheFlag = false;
 };
