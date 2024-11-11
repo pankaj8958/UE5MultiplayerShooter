@@ -214,6 +214,13 @@ void ABlasterCharacter::PollInit()
 
 void ABlasterCharacter::RotateInPlace(float DeltaTime)
 {
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag)
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
 	if(bDisplayGameplay)
 	{
 		bUseControllerRotationYaw = false;
@@ -320,11 +327,13 @@ void ABlasterCharacter::EquippeButtonP̦ressed()
 	if(bDisplayGameplay) return;
 	if(PlayerCombat)
 	{
+		if(PlayerCombat->bHoldingTheFlag) return;
 		ServerEquipButtonPressed();
 	}
 }
 void ABlasterCharacter::CrouchButtonPressed()
 {
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag) return;
 	if(bDisplayGameplay) return;
 	if(bIsCrouched)
 	{
@@ -337,6 +346,7 @@ void ABlasterCharacter::CrouchButtonPressed()
 void ABlasterCharacter::ReloadButtonPressed()
 {
 	if(bDisplayGameplay) return;
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->Reload();
@@ -345,6 +355,7 @@ void ABlasterCharacter::ReloadButtonPressed()
 void ABlasterCharacter::AimButtonPresses()
 {
 	if(bDisplayGameplay) return;
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->SetAiming(true);
@@ -353,6 +364,7 @@ void ABlasterCharacter::AimButtonPresses()
 void ABlasterCharacter::AimButtonReleased()
 {
 	if(bDisplayGameplay) return;
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->SetAiming(false);
@@ -514,6 +526,7 @@ AWeapon* ABlasterCharacter::GetEquippedWeapon()
 void ABlasterCharacter::Jump()
 {
 	if(bDisplayGameplay) return;
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag) return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -526,6 +539,7 @@ void ABlasterCharacter::Jump()
 void ABlasterCharacter::FireButtonPressed()
 {
 	if(bDisplayGameplay) return;
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->FireButtonPressed(true);
@@ -534,6 +548,7 @@ void ABlasterCharacter::FireButtonPressed()
 void ABlasterCharacter::FireButtonReleased()
 {
 	if(bDisplayGameplay) return;
+	if(PlayerCombat && PlayerCombat->bHoldingTheFlag) return;
 	if(PlayerCombat)
 	{
 		PlayerCombat->FireButtonPressed(false);
@@ -564,6 +579,10 @@ void ABlasterCharacter::DropOrDestroyWeapons()
 		if(PlayerCombat->SecondaryWeapon)
 		{
 			DropOrDestroyWeapon(PlayerCombat->SecondaryWeapon);
+		}
+		if(PlayerCombat->TheFlag)
+		{
+			PlayerCombat->TheFlag->Dropped();
 		}
 	}
 }
@@ -875,6 +894,13 @@ bool ABlasterCharacter::IsHoldingTheFlag() const
 {
 	if(PlayerCombat == nullptr) return false;
 	return PlayerCombat->bHoldingTheFlag;
+}
+
+ETeam ABlasterCharacter::GetTeam()
+{
+	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>(): BlasterPlayerState;
+	if(BlasterPlayerState == nullptr) return ETeam::ET_NoTeam;
+	return BlasterPlayerState->GetTeam();
 }
 
 void ABlasterCharacter::UpdateHUDAmmo()

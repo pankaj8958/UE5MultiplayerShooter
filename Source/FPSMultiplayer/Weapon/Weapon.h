@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WeaponTypes.h"
+#include "FPSMultiplayer/GameMode/Team.h"
 #include "Weapon.generated.h"
 UENUM(BLueprintType)
 enum class EWeaponState : uint8
@@ -34,7 +35,7 @@ public:
 	float FireDelay = 0.15f;
 	UPROPERTY(EditAnywhere, Category=Combat)
 	bool bAutomatic = true;
-	void Dropped();
+	virtual void Dropped();
 	void SetHudWeaponAmmo();
 	void AddAmmo(int32 AmmoAmt);
 	UPROPERTY(EditAnywhere)
@@ -115,6 +116,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
+
+	UPROPERTY(EditAnywhere)
+	ETeam Team;
 
 public:
 	UPROPERTY(EditAnywhere, Category="Crosshairs")

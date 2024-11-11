@@ -56,6 +56,7 @@ protected:
 	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
 	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
 	void AttachActorToBackpack(AActor* ActorToAttach);
+	void AttachFlagToLeftHand(AWeapon* Flag);
 private:
 	class ABlasterCharacter* Character;
 	class ABlasterPlayerController* PlayerController;
@@ -120,5 +121,10 @@ private:
 	void OnRep_CombatState();
 	void UpdateAmmoValues();
 	void SwapWeapons();
+	UPROPERTY(ReplicatedUsing="OnRep_HoldingTheFlag")
 	bool bHoldingTheFlag = false;
+	UFUNCTION()
+	void OnRep_HoldingTheFlag();
+	UPROPERTY()
+	AWeapon* TheFlag;
 };

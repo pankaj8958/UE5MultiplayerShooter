@@ -64,6 +64,7 @@ void UCombatCompoment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatCompoment, bAiming);
 	DOREPLIFETIME_CONDITION(UCombatCompoment, CarryAmmo, COND_OwnerOnly);
 	DOREPLIFETIME(UCombatCompoment, CombatState);
+	DOREPLIFETIME(UCombatCompoment, bHoldingTheFlag);
 }
 void UCombatCompoment::SetAiming(bool bIsAiming)
 {
@@ -87,15 +88,25 @@ void UCombatCompoment::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if(Character == nullptr || WeaponToEquip == nullptr)
 		return;
-	if(EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
+	if (WeaponToEquip->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
-		EquipSecondaryWeapon(WeaponToEquip);
-	}
-	else
+		Character->Crouch();
+		bHoldingTheFlag = true;
+		WeaponToEquip->SetWeaponState(EWeaponState::EWS_Equipped);
+		AttachFlagToLeftHand(WeaponToEquip);
+		WeaponToEquip->SetOwner(Character);
+		TheFlag = WeaponToEquip;
+	} else
 	{
-		EquipPrimaryWeapon(WeaponToEquip);	
+		if(EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
+		{
+			EquipSecondaryWeapon(WeaponToEquip);
+		}
+		else
+		{
+			EquipPrimaryWeapon(WeaponToEquip);	
+		}
 	}
-	
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
 }
@@ -164,6 +175,15 @@ void UCombatCompoment::SwapWeapons()
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
 	AttachActorToBackpack(SecondaryWeapon);
 }
+
+void UCombatCompoment::OnRep_HoldingTheFlag()
+{
+	if(bHoldingTheFlag && Character->IsLocallyControlled())
+	{
+		Character->Crouch();
+	}
+}
+
 bool UCombatCompoment::ShouldSwapWeapons()
 {
 	return (EquippedWeapon != nullptr && SecondaryWeapon != nullptr);
@@ -179,6 +199,17 @@ void UCombatCompoment::AttachActorToBackpack(AActor* ActorToAttach)
 		BackpackSocket->AttachActor(ActorToAttach, Character->GetMesh());
 	}
 }
+
+void UCombatCompoment::AttachFlagToLeftHand(AWeapon* Flag)
+{
+	if(Character == nullptr || Character->GetMesh() == nullptr || Flag == nullptr) return;
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("FlagSocket"));
+	if(HandSocket)
+	{
+		HandSocket->AttachActor(Flag, Character->GetMesh());
+	}
+}
+
 void UCombatCompoment::Reload()
 {
 	if(CarryAmmo > 0 && CombatState != ECombatType::ECS_Reloading && !bLocallyReloading)
