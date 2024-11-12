@@ -229,6 +229,7 @@ private:
 	UPROPERTY(EditAnywhere, Category=Elim)
 	UMaterialInstance* OriginalMaterial;
 public:
+	void SetHoldingTheFlag(bool bHolding);
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
 	bool IsAiming();

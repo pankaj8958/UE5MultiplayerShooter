@@ -16,10 +16,15 @@ class FPSMULTIPLAYER_API AFlag : public AWeapon
 public:
 	AFlag();
 	virtual void Dropped() override;
+	void ResetFlag();
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* FlagMesh;
+	FTransform InitialTransform;
 protected:
 	virtual void OnEquipped() override;
 	virtual void OnDropped() override;
+	virtual void BeginPlay() override;
+public:
+	FORCEINLINE FTransform GetIntialTransform() const {return  InitialTransform; }
 };

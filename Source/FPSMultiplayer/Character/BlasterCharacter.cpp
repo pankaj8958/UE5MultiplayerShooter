@@ -219,6 +219,11 @@ void ABlasterCharacter::RotateInPlace(float DeltaTime)
 		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 		return;
 	}
+	if(PlayerCombat && PlayerCombat->EquippedWeapon)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		bUseControllerRotationYaw = true;
+	}
 	if(bDisplayGameplay)
 	{
 		bUseControllerRotationYaw = false;
@@ -392,6 +397,12 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
 	}
+}
+
+void ABlasterCharacter::SetHoldingTheFlag(bool bHolding)
+{
+	if(PlayerCombat == nullptr) return;
+	PlayerCombat->bHoldingTheFlag = bHolding;
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon *Weapon)

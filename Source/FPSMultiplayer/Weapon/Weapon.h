@@ -146,4 +146,5 @@ public:
 	FORCEINLINE int32 GetAmmo() const {return  Ammo;}
 	FORCEINLINE int32 GetMagCapacity() const {return  MagCapacity;}
 	FORCEINLINE float GetDamage() const {return  Damage;}
+	FORCEINLINE ETeam GetTeam() const {return Team;}
 };
