@@ -50,7 +50,9 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 
 	class UMultiplayerSessionSubsystem* multiplayerSessionSubsystem;
 
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int32 numPublicConnections{4};
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FString matchType{TEXT("FreeForAll")};
 	FString pathToLobby {TEXT("")};
 };

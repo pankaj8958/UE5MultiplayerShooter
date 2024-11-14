@@ -32,14 +32,16 @@ class MULTIPLAYERSESSIONS_API UMultiplayerSessionSubsystem : public UGameInstanc
 	FMultiplayerOnJoinSessionComplete multiplayerOnJoinSessionComplete;
 	FMultiplayerOnDestroySessionComplete multiplayerOnDestroySessionComplete;
 	FMultiplayerOnStartSessionComplete multiplayerOnStartSessionComplete;
-
+	int32 DesiredNumPublicConnections{};
+	FString DesiredMatchType{};
+	
 	protected:
 	void OnCreateSessionComplete(FName sessionName,  bool bWasSuccessful);
 	void OnFindSessionComplete(bool bWasSuccessful);
 	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result);
 	void OnDestroySessionComplete(FName sessionName, bool bWasSuccessful);
 	void OnStartSessionComplete(FName sessionName, bool bWasSuccessful);
-
+	
 	private:
 	IOnlineSessionPtr sessionInterface;
 	TSharedPtr<FOnlineSessionSettings> lastSessionSettings;
